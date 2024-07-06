@@ -1,0 +1,6 @@
+/public/jsonfiles/*
+/storage
+.env
+.env.backup
+.htaccess
+/boostrap/env.php
