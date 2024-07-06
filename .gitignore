@@ -2,5 +2,5 @@
 /storage
 .env
 .env.backup
-.htaccess
+/.htaccess
 /boostrap/env.php
