@@ -32,6 +32,107 @@ class ApiController extends Controller
         $this->jellyfin = new JellyFin();
     }
 
+    public function move_massive_customer(Request $request){
+        $data = [];
+        $server_from_id = $request->server_from_id;
+        $server_to_id = $request->server_to_id;
+        $customer_id = $request->customer_id;
+        $delete_old_server = $request->delete_old_server;
+        $generate_new_email = $request->generate_new_email;
+        $how_set_package = $request->how_set_package;
+        $package_id = $request->package_id;
+        $server_is_baned = $request->server_is_baned;
+
+        $server_from = Server::find($server_from_id);
+        $server_to = Server::find($server_to_id);
+        $customer = Customer::find($customer_id);
+
+        $newPackage = null;
+
+        if($how_set_package == "compare"){
+              if(!empty($customer->package_id)){
+                foreach($server_to->packages as $package){
+                    if( trim(strtolower($package->name)) == trim(strtolower($customer->package->name)) ){
+                        $newPackage = $package->id;
+                        break;
+                    }
+                }
+            }
+        }else if ($how_set_package == "default_package"){
+            if(!empty($package_id)){
+                $newPackage = $package_id;
+            }
+        }
+
+        //Updated Package
+        $customer->package_id = $newPackage;
+        $customer->save();
+
+        $customer = Customer::find($customer_id);
+
+        if($server_is_baned == 'Y'){
+            $this->plex->setServerCredentials($server_to->url, $server_to->token);
+            $user = $this->plex->loginInPlex($customer->email, $customer->password);
+
+            if(!is_array($user)){
+                $data['success'] = false;
+                $data['error']['login_in_plex'] = "las credenciales de las cuenta no son correctas, es posible que el correo o la clave hayan sido cambiadas";
+                $data['message'] = "Error de Cambio.";
+            }else{
+                $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
+                $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
+                if(empty($the_data[0]->invited_id)){
+                    $data['success'] = false;
+                    $data['error'] = "Ocurrio un error al crear la cuenta";
+                    $data['message'] = "Error de Cambio.";
+                }else{
+                    $customer->server_id = $server_to->id;
+                    $customer->save();
+
+                    $customer = Customer::with("package")->find($customer_id);
+
+                    $data['success'] = true;
+                    $data['message'] = "Cambio Realizado con Exito!!";
+                    $data['customer'] = $customer;
+                }
+            }
+        }else{
+             //Delete from Old Server
+            $this->plex->setServerCredentials($server_from->url, $server_from->token);
+            $this->plex->provider->removeFriend($customer->invited_id);
+
+            //Add to New Server
+            $this->plex->setServerCredentials($server_to->url, $server_to->token);
+            $user = $this->plex->loginInPlex($customer->email, $customer->password);
+
+            if(!is_array($user)){
+                $data['success'] = false;
+                $data['error'] = "las credenciales de las cuenta no son correctas, es posible que el correo o la clave hayan sido cambiadas";
+                $data['message'] = "Error de Cambio.";
+            }else{
+                $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
+                $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
+                if(empty($the_data[0]->invited_id)){
+                    $data['success'] = false;
+                    $data['error'] = "Ocurrio un error al crear la cuenta";
+                    $data['message'] = "Error de Cambio.";
+                }else{
+                    $customer->server_id = $server_to->id;
+                    $customer->save();
+
+                    $customer = Customer::with("package")->find($customer_id);
+
+                    $data['success'] = true;
+                    $data['message'] = "Cambio Realizado con Exito!!";
+                    $data['customer'] = $customer;
+                }
+            }
+
+        }
+
+        return response()->json($data);
+    }
+
     public function get_months_duration($duration_id){
         $data = Duration::findorfail($duration_id);
         $date = $this->addMonthsToCurrentDate($data->months);
@@ -978,6 +1079,14 @@ class ApiController extends Controller
         $userData = $this->plex->loginInPlex($server->url, $server->token);
         $this->plex->removeServer($userData, $invited_id);
         return response()->json(['success'=>true]);
+    }
+
+    public function getCustomersByServer($server_id = null){
+        $customers = [];
+        if($server_id){
+            $customers = Customer::with(['package'])->where('server_id', $server_id)->where('status','active')->get();
+        }
+        return response()->json($customers);
     }
 
 }

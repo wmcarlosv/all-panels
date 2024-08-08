@@ -24,3 +24,5 @@ Route::post('get-library', [ApiController::class, 'getLibrary']);
 Route::post('search-library', [ApiController::class, 'searchLibrary']);
 Route::get('get-active-sessions/{server_id}/{user_id?}', [ApiController::class, 'get_active_sessions']); 
 Route::post('get-jellyfin-libraries', [ApiController::class, 'get_jellyfin_libraries'])->name('get_jellyfin_libraries');
+Route::get('get-customers-by-server/{server_id}', [ApiController::class, 'getCustomersByServer']);
+Route::post('move-customers-massive', [ApiController::class, 'move_massive_customer'])->name("move_customers_massive");

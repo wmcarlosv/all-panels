@@ -588,7 +588,7 @@ class Plex {
         $response = file_get_contents($url);
     }
 
-    public function createPlexAccountNotCredit($email, $password, $data){
+    public function createPlexAccountNotCredit($email, $password, $data, $registerMovement = true){
         $this->setServerCredentials($this->server_email, $this->server_password);
         $customer = Customer::findorfail($data->id);
         $duration = Duration::findorfail($data->duration_id);
@@ -644,7 +644,9 @@ class Plex {
         
         $customer->update();
 
-        $this->addMovement("Creacion de Cuenta Sin Afectar Creditos",$customer);
+        if($registerMovement){
+            $this->addMovement("Creacion de Cuenta Sin Afectar Creditos",$customer);
+        }   
     }
 
     public function getCorrectProxy(){
@@ -668,13 +670,12 @@ class Plex {
     }
 
     public function createHomeUser(Server $server, Customer $customer, $pin){
-
-        $url = "https://plex.tv/api/home/users?invitedEmail=".$customer->plex_user_name;
+        $url = "https://clients.plex.tv/api/v2/home/users/restricted?friendlyName=".$customer->plex_user_name;
+        $dataOwner = $this->loginInPlex($server->url, $server->token);
         $ch = curl_init($url);
         $validated = true;
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERPWD, $server->url . ':' . $server->token);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml', 'X-Plex-Client-Identifier: '.uniqid(), 'X-Plex-Token: '.$dataOwner['user']['authToken']));
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_POST, 1);
         $user = simplexml_load_string(curl_exec($ch));
@@ -691,19 +692,19 @@ class Plex {
         }
 
         if($validated){
-            //$this->setServerCredentials($server->url, $server->token);
-            $dataOwner = $this->loginInPlex($server->url, $server->token);
             //dd($dataOwner);
             $this->setServerCredentials($server->url, $server->token);
             $valid = $this->getDataInvitationHomeUser($customer->email, $customer->password, $dataOwner['user']['id']);
-            if($valid){
+            //if($valid){
                 $userPin = $this->loginInPlex($customer->email, $customer->password);
                 $this->setServerCredentials($server->url, $server->token);
                 $this->setHomeUserPin($userPin,$pin);
-            }else{
+            /*}else{
                 $validated = false;
-            }
+            }*/
         }
+
+        
         return $validated;
     }
 
@@ -721,7 +722,6 @@ class Plex {
 
         $response = file_get_contents('https://clients.plex.tv/api/v2/shared_servers/invites/received/pending?X-Plex-Client-Identifier='.uniqid(), false, $context);
         $data = simplexml_load_string($response);
-        
         if(!empty($data)){
             if($data->invite->sharedServers){
                 $ownerId = (string)$data->invite->sharedServers->sharedServer->attributes()->{'id'};
@@ -739,14 +739,15 @@ class Plex {
     }
 
     public function setHomeUserPin($user,$pin=""){
-        $url = "https://clients.plex.tv/api/home/users/".$user['user']['id']."?pin=".$pin."&X-Plex-Client-Identifier=".uniqid()."&X-Plex-Token=".$user['user']['authToken'];
+        $url = "https://clients.plex.tv/api/v2/home/users/restricted/".$user['user']['id']."?friendlyName=".$user['user']['username']."&pin=".$pin."&X-Plex-Client-Identifier=".uniqid()."&X-Plex-Token=".$user['user']['authToken'];
+        dd($url);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         $pin = simplexml_load_string(curl_exec($ch));
-
+        dd($pin);
         if (curl_errno($ch)) {
             echo 'cURL error: ' . curl_error($ch);
         }

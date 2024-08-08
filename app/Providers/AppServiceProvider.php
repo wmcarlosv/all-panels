@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
         Voyager::addAction(\App\Actions\ExtendSubscriptionAction::class);
         Voyager::addAction(\App\Actions\RefreshServerLibrariesAction::class);
         Voyager::addAction(\App\Actions\ConvertJellyfinCustomer::class);
+        #Voyager::addAction(\App\Actions\MasiveChangeServerAction::class);
         Paginator::useBootstrap();
     }
 }

@@ -193,6 +193,8 @@ class ServerController extends VoyagerBaseController
             $view = "voyager::$slug.browse";
         }
 
+        $servers = Server::where('is_demo',0)->where('status', 1)->get();
+
         return Voyager::view($view, compact(
             'actions',
             'dataType',
@@ -208,7 +210,8 @@ class ServerController extends VoyagerBaseController
             'defaultSearchKey',
             'usesSoftDeletes',
             'showSoftDeleted',
-            'showCheckboxColumn'
+            'showCheckboxColumn',
+            'servers'
         ));
     }
 

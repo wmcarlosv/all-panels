@@ -22,6 +22,11 @@
                 </a>
             @endif
         @endcan
+
+        @can('add', app($dataType->model_name))
+            <a href="#" id="button_masive_server" class="btn btn-info"><i class="voyager-tv"></i> Cambio Masivo de Servidores</a>
+        @endcan
+
         @can('delete', app($dataType->model_name))
             @if($usesSoftDeletes)
                 <input type="checkbox" @if ($showSoftDeleted) checked @endif id="show_soft_deletes" data-toggle="toggle" data-on="{{ __('voyager::bread.soft_deletes_off') }}" data-off="{{ __('voyager::bread.soft_deletes_on') }}">
@@ -362,6 +367,96 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade modal-success" id="modal-change-masive-server">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Cambio Masivo de Servidor</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group col-md-6">
+                    <label for="">Servidor desde:</label>
+                    <select id="id_server_from" class="form-control">
+                        <option value="">Seleccione</option>
+                        @foreach($servers as $server)
+                            <option value="{{$server->id}}" data-server-id="{{$server->id}}" data-server-name="{{$server->name_and_local_name}}">{{$server->name_and_local_name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="">Servidor hasta:</label>
+                    <select id="cms_new_server" class="form-control">
+                        <option value="">Seleccione</option>
+                        @foreach($servers as $server)
+                            <option value="{{$server->id}}" data-packages='{{json_encode($server->packages)}}'>{{$server->name_and_local_name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="">Generar:</label>
+                    <select id="generate_new_email" class="form-control">
+                        <option value="new_account">Cuenta Nueva</option>
+                        <option value="same_account" selected>Misma Cuenta</option>
+                    </select>
+                </div>
+                <!--<div class="form-group col-md-6">
+                    <label for="">Eliminar el viejo servidor y sus cuentas una vez finalizado el proceso?:</label>
+                    <select id="delete_old_server" class="form-control">
+                        <option value="Y">Si</option>
+                        <option value="N" selected>No</option>
+                    </select>
+                </div>-->
+                <div class="form-group col-md-6">
+                    <label for="">Como se majeran los paquetes?:</label>
+                    <select id="how_set_package" class="form-control">
+                        <option value="no_package">Sin paquetes</option>
+                        <option value="compare">Comparar con servidor actual</option>
+                        <option value="default_package">Paquete por defecto</option>
+                    </select>
+                </div>
+                <div id="col_package_id" style="display:none;" class="form-group col-md-12">
+                    <label for="">Paquete:</label>
+                    <select id="package_id" class="form-control">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="server_is_baned">Servidor Baneado?</label>
+                        <select id="server_is_baned" class="form-control">
+                            <option value="Y">Si</option>
+                            <option value="N" selected>No</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <th><input type="checkbox" id="all_select" /></th>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Paq. Actual</th>
+                        <th>Nuevo Email</th>
+                        <th>Paq. Nuevo</th>
+                        <th>Estatus</th>
+                    </thead>
+                    <tbody id="load-customers">
+                        
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="save-change-masive-server">Cambiar</button>
+                <button type="button" class="btn btn-danger" id="cancel-change-masive-server">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @stop
 
 @section('css')
@@ -379,8 +474,137 @@
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        var theInterval;
+        var indexCustomer = 0;
         $(document).ready(function () {
             var selected_server_id;
+            $("#save-change-masive-server").click(function(){
+                var customers = $("input[name='new_customers[]']:checked");
+                let server_from = $("#id_server_from").val();
+                let server_to = $("#cms_new_server").val();
+                
+
+                if(server_from === server_to){
+                    alert("Los Servidores seleccionados deben ser distintos!!");
+                    return;
+                }
+
+                if(!server_from || !server_to || customers.length <= 0){
+                    alert("Para la importacion debe seleccionar, el servidor desde, servidor hasta y al menos seleccionar un cliente!!");
+                    return;
+                }
+
+                if(confirm("Esta seguro de realizar el movimiento masivo de cuentas?")){
+                    $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", true);
+                    theInterval = setInterval(function(){
+                            if(indexCustomer >= customers.length){
+                                clearInterval(theInterval);
+                                $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", false);
+                                alert("Proceso de migracion Finalizado..");
+                            }else{
+                                $("#status_"+customers[indexCustomer].value).html("<p>Cargando...</p>");
+                                movementAccount(customers[indexCustomer].value);
+                            }
+                            indexCustomer++;
+                        }, 10000);
+                }
+            });
+
+            function movementAccount(customer_selected){
+                let server_from = $("#id_server_from").val();
+                let server_to = $("#cms_new_server").val();
+                let generate_new_email = $("#generate_new_email").val();
+                let delete_old_server = null; //$("#delete_old_server").val();
+                let how_set_package = $("#how_set_package").val();
+                let package_id = $("#package_id").val();
+                let server_is_baned = $("#server_is_baned").val();
+                let customer_id = customer_selected;
+
+                $.post("{{route('move_customers_massive')}}", { server_from_id: server_from, server_to_id: server_to, customer_id: customer_id, generate_new_email:generate_new_email, delete_old_server:delete_old_server, how_set_package:how_set_package, package_id:package_id, server_is_baned:server_is_baned  }, function(response){
+                    let data = response;
+                    if(response.success){
+                        $("#status_"+customer_selected).html("<p style='font-weight:bold; color:green;'>Listo</p>");
+                        $("#checked_"+customer_selected).removeAttr("checked").hide();
+                        $("#new_email_"+response.customer.id).html(response.customer.email);
+
+                        if(response.customer.package_id){
+                            $("#package_"+response.customer.id).html(response.customer.package.name);
+                        }
+                    }else{
+                         $("#status_"+customer_selected).html("<p style='font-weight:bold; color:red;' title='"+response.error+"'>Error</p>");
+                    }
+                });
+            }
+
+            $("#all_select").click(function(){
+                let cuentas = $("input[name='new_customers[]']");
+                if($(this).prop("checked")){
+                    if(cuentas.length > 0){
+                        $.each(cuentas, function(v,e){
+                            e.setAttribute("checked", true);
+                        });
+                    }
+                }else{
+                    if(cuentas.length > 0){
+                       $.each(cuentas, function(v,e){
+                            e.removeAttribute("checked");
+                        }); 
+                   }
+                }
+            });
+
+            $("#how_set_package").change(function(){
+                let value = $(this).val();
+                if(value == "default_package"){
+                    let packages = JSON.parse($("#cms_new_server").children("option:selected").attr("data-packages"));
+                    if(packages.length > 0){
+                        $("#package_id").html("<option value=''>Seleccione</option>");
+                        $.each(packages, function(v,e){
+                            $("#package_id").append("<option value='"+e.id+"'>"+e.name+"</option>");
+                        });
+                    }else{
+                        $("#package_id").html("<option value=''>Seleccione</option>");
+                    }
+                        
+                    $("#col_package_id").show();
+                }else{
+                    $("#col_package_id").hide();
+                }
+
+                $("#package_id").val("");
+            });
+
+            $("body").on("change","select#id_server_from", function(e){
+                e.preventDefault();
+                let server_id = $(this).children("option:selected").data("server-id");
+                let server_name = $(this).children("option:selected").data('server-name');
+                if(server_id){
+                    $("#server_from").val(server_name);
+                    $("#load-customers").empty();
+                    $("#load-customers").html("<tr><td colspan='7' align='center'>Cargando...</td></tr>");
+                    $.get('/api/get-customers-by-server/'+server_id, function(response){
+                        let data = response;
+                        if(data.length > 0){
+                            $("#load-customers").empty();
+                            $.each(data, function(v,e){
+                                $("#load-customers").append("<tr><td><input type='checkbox' id='checked_"+e.id+"' name='new_customers[]' value='"+e.id+"' /></td><td>"+e.plex_user_name+"</td><td>"+e.email+"</td><td>"+(e.package_id ? e.package.name : 'Sin Paquete')+"</td><td id='new_email_"+e.id+"'></td><td id='package_"+e.id+"'></td><td id='status_"+e.id+"'>Listo para migrar</td></tr>");  
+                            });
+                        }else{
+                            $("#load-customers").html("<tr><td colspan='7' align='center'>Sin Datos</td></tr>");
+                        }
+                    });
+                }
+
+            });
+
+            $("#button_masive_server").click(function(){
+                $("#modal-change-masive-server").modal({backdrop:'static', keyboard: false}, "show");
+            });
+
+            $("#cancel-change-masive-server").click(function(){
+                $("#modal-change-masive-server").modal("hide");
+            });
+
             $("body").on("click","a.view-refresh-server-libraries", function(){
                 let id = $(this).attr("data-id");
                 let name = $(this).attr("data-name");
