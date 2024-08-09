@@ -607,28 +607,33 @@ class Plex {
             filterTelevision: '',
         );
 
-        if($response['response']['status'] == "Valid user"){
-            $this->provider->cancelInvite($email);
-            $invited = $this->provider->inviteFriend($email, $librarySectionIds, $settings);
-            if(is_array($invited)){
-                $customer->plex_user_name = $invited['invited']['username'];
-                $customer->invited_id = $invited['invited']['id'];
+        if(is_array($response)){
+            if($response['response']['status'] == "Valid user"){
+                $this->provider->cancelInvite($email);
+                $invited = $this->provider->inviteFriend($email, $librarySectionIds, $settings);
+                if(is_array($invited)){
+                    $customer->plex_user_name = $invited['invited']['username'];
+                    $customer->invited_id = $invited['invited']['id'];
+                }else{
+                    $customer->plex_user_name = null;
+                    $customer->invited_id = null;
+                }
+                
             }else{
-                $customer->plex_user_name = null;
-                $customer->invited_id = null;
-            }
-            
-        }else{
-            $plex_user = simplexml_load_string($this->createPlexUser($email, $password));
-            $customer->plex_user_name = $plex_user->attributes()->{'username'};
-            $invited = $this->provider->inviteFriend($email, $librarySectionIds, $settings);
+                $plex_user = simplexml_load_string($this->createPlexUser($email, $password));
+                $customer->plex_user_name = $plex_user->attributes()->{'username'};
+                $invited = $this->provider->inviteFriend($email, $librarySectionIds, $settings);
 
-            if(is_array($invited)){
-                $customer->invited_id = $invited['invited']['id'];
-            }else{
-                $customer->invited_id = null;
+                if(is_array($invited)){
+                    $customer->invited_id = $invited['invited']['id'];
+                }else{
+                    $customer->invited_id = null;
+                }
+                
             }
-            
+        }else{
+            $customer->plex_user_name = null;
+            $customer->invited_id = null;
         }
 
         if(is_array($invited)){
@@ -924,22 +929,28 @@ class Plex {
 
         $invited = null;
 
-        if($response['response']['status'] == "Valid user"){
-            $this->provider->cancelInvite($email);
-            $invited = $this->provider->inviteFriend($email, $librarySectionIds, $settings);
-            if(is_array($invited)){
-                $customer->plex_user_name = $invited['invited']['username'];
-                $customer->invited_id = $invited['invited']['id'];
-                $customer->plex_user_id = $invited['inviteToken'];
+        if(is_array($response)){
+            if($response['response']['status'] == "Valid user"){
+                $this->provider->cancelInvite($email);
+                $invited = $this->provider->inviteFriend($email, $librarySectionIds, $settings);
+                if(is_array($invited)){
+                    $customer->plex_user_name = $invited['invited']['username'];
+                    $customer->invited_id = $invited['invited']['id'];
+                    $customer->plex_user_id = $invited['inviteToken'];
+                }else{
+                    $customer->plex_user_name = null;
+                    $customer->invited_id = null;
+                }
+                
             }else{
                 $customer->plex_user_name = null;
                 $customer->invited_id = null;
             }
-            
         }else{
             $customer->plex_user_name = null;
             $customer->invited_id = null;
         }
+        
         $customer->update();
 
         if($registerMovement){
