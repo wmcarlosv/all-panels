@@ -415,7 +415,7 @@
                     <label for="">Como se majeran los paquetes?:</label>
                     <select id="how_set_package" class="form-control">
                         <option value="no_package">Sin paquetes</option>
-                        <option value="compare">Comparar con servidor actual</option>
+                        <option value="compare" selected>Comparar con servidor actual</option>
                         <option value="default_package">Paquete por defecto</option>
                     </select>
                 </div>
@@ -424,6 +424,12 @@
                     <select id="package_id" class="form-control">
                         <option value="">Seleccione</option>
                     </select>
+                </div>
+                <div class="col-md-12" style="display: none;" id="content_prefix_email">
+                    <div class="form-group">
+                        <label for="prefix_email">Prefijo Cuenta Nueva:</label>
+                        <input type="text" class="form-control" id="prefix_email" />
+                    </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
@@ -452,7 +458,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="save-change-masive-server">Cambiar</button>
-                <button type="button" class="btn btn-danger" id="cancel-change-masive-server">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="cancel-change-masive-server">Salir</button>
             </div>
         </div>
     </div>
@@ -478,6 +484,17 @@
         var indexCustomer = 0;
         $(document).ready(function () {
             var selected_server_id;
+
+            $("#generate_new_email").change(function(){
+                let value = $(this).val();
+                if(value == "new_account"){
+                    $("#content_prefix_email").show();
+                }else{
+                    $("#content_prefix_email").hide();
+                    $("#prefix_email").val("");
+                }
+            });
+
             $("#save-change-masive-server").click(function(){
                 var customers = $("input[name='new_customers[]']:checked");
                 let server_from = $("#id_server_from").val();
@@ -519,8 +536,9 @@
                 let package_id = $("#package_id").val();
                 let server_is_baned = $("#server_is_baned").val();
                 let customer_id = customer_selected;
+                let prefix_email = $("#prefix_email").val();
 
-                $.post("{{route('move_customers_massive')}}", { server_from_id: server_from, server_to_id: server_to, customer_id: customer_id, generate_new_email:generate_new_email, delete_old_server:delete_old_server, how_set_package:how_set_package, package_id:package_id, server_is_baned:server_is_baned  }, function(response){
+                $.post("{{route('move_customers_massive')}}", { server_from_id: server_from, server_to_id: server_to, customer_id: customer_id, generate_new_email:generate_new_email, delete_old_server:delete_old_server, how_set_package:how_set_package, package_id:package_id, server_is_baned:server_is_baned, prefix_email:prefix_email  }, function(response){
                     let data = response;
                     if(response.success){
                         $("#status_"+customer_selected).html("<p style='font-weight:bold; color:green;'>Listo</p>");
@@ -587,7 +605,7 @@
                         if(data.length > 0){
                             $("#load-customers").empty();
                             $.each(data, function(v,e){
-                                $("#load-customers").append("<tr><td><input type='checkbox' id='checked_"+e.id+"' name='new_customers[]' value='"+e.id+"' /></td><td>"+e.plex_user_name+"</td><td>"+e.email+"</td><td>"+(e.package_id ? e.package.name : 'Sin Paquete')+"</td><td id='new_email_"+e.id+"'></td><td id='package_"+e.id+"'></td><td id='status_"+e.id+"'>Listo para migrar</td></tr>");  
+                                $("#load-customers").append("<tr><td><input type='checkbox' id='checked_"+e.id+"' name='new_customers[]' value='"+e.id+"' /></td><td>"+e.plex_user_name+"</td><td>"+e.email+"</td><td>"+(e.package ? e.package.name : 'Sin Paquete')+"</td><td id='new_email_"+e.id+"'></td><td id='package_"+e.id+"'></td><td id='status_"+e.id+"'>Listo para migrar</td></tr>");  
                             });
                         }else{
                             $("#load-customers").html("<tr><td colspan='7' align='center'>Sin Datos</td></tr>");
@@ -602,7 +620,8 @@
             });
 
             $("#cancel-change-masive-server").click(function(){
-                $("#modal-change-masive-server").modal("hide");
+                location.reload();
+                //$("#modal-change-masive-server").modal("hide");
             });
 
             $("body").on("click","a.view-refresh-server-libraries", function(){

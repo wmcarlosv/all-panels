@@ -42,6 +42,7 @@ class ApiController extends Controller
         $how_set_package = $request->how_set_package;
         $package_id = $request->package_id;
         $server_is_baned = $request->server_is_baned;
+        $prefix_email = $request->prefix_email;
 
         $server_from = Server::find($server_from_id);
         $server_to = Server::find($server_to_id);
@@ -72,6 +73,8 @@ class ApiController extends Controller
 
         if($server_is_baned == 'Y'){
             $this->plex->setServerCredentials($server_to->url, $server_to->token);
+
+            
             $user = $this->plex->loginInPlex($customer->email, $customer->password);
 
             if(!is_array($user)){
