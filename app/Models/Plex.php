@@ -901,7 +901,7 @@ class Plex {
         $customer->update();
     }
 
-    public function createPlexAccountNoPasswordNoCredit($email, $data){
+    public function createPlexAccountNoPasswordNoCredit($email, $data, $registerMovement = true){
 
         $this->setServerCredentials($this->server_email, $this->server_password);
         
@@ -942,7 +942,9 @@ class Plex {
         }
         $customer->update();
 
-        $this->addMovement("Creacion de Cuenta Sin Clave Sin Afectar Creditos",$customer);
+        if($registerMovement){
+           $this->addMovement("Creacion de Cuenta Sin Clave Sin Afectar Creditos",$customer); 
+       }
     }
 
     public function createPlexAccountNoPasswordNoCreditDemo($email, $data){
