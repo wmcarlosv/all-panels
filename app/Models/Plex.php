@@ -607,6 +607,8 @@ class Plex {
             filterTelevision: '',
         );
 
+        $invited = null;
+
         if(is_array($response)){
             if($response['response']['status'] == "Valid user"){
                 $this->provider->cancelInvite($email);
