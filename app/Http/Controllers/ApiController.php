@@ -71,18 +71,35 @@ class ApiController extends Controller
 
         $customer = Customer::find($customer_id);
 
+        $errorLogin = true;
+
         if($server_is_baned == 'Y'){
             $this->plex->setServerCredentials($server_to->url, $server_to->token);
 
-            
-            $user = $this->plex->loginInPlex($customer->email, $customer->password);
+            if($customer->password != "#5inCl4ve#"){
+                $user = $this->plex->loginInPlex($customer->email, $customer->password);
+                if(!is_array($user)){
+                     $errorLogin = false;
+                }
+            }else{
+                $user = $this->plex->provider->validateUser($customer->email);
+                if(!is_array($user)){
+                     $errorLogin = false;
+                }
+            }
 
-            if(!is_array($user)){
+            if(!$errorLogin){
                 $data['success'] = false;
-                $data['error']['login_in_plex'] = "las credenciales de las cuenta no son correctas, es posible que el correo o la clave hayan sido cambiadas";
+                $data['error'] = "las credenciales de las cuenta no son correctas, es posible que el correo o la clave hayan sido cambiadas";
                 $data['message'] = "Error de Cambio.";
             }else{
-                $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
+
+                if($customer->password != "#5inCl4ve#"){
+                    $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
+                }else{
+                    $this->plex->createPlexAccountNoPasswordNoCredit($customer->email, $customer);
+                }
+                
                 $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
                 if(empty($the_data[0]->invited_id)){
                     $data['success'] = false;
@@ -106,14 +123,31 @@ class ApiController extends Controller
 
             //Add to New Server
             $this->plex->setServerCredentials($server_to->url, $server_to->token);
-            $user = $this->plex->loginInPlex($customer->email, $customer->password);
 
-            if(!is_array($user)){
+            if($customer->password != "#5inCl4ve#"){
+                $user = $this->plex->loginInPlex($customer->email, $customer->password);
+                if(!is_array($user)){
+                     $errorLogin = false;
+                }
+            }else{
+                $user = $this->plex->provider->validateUser($customer->email);
+                if(!is_array($user)){
+                     $errorLogin = false;
+                }
+            }
+
+            if(!$errorLogin){
                 $data['success'] = false;
                 $data['error'] = "las credenciales de las cuenta no son correctas, es posible que el correo o la clave hayan sido cambiadas";
                 $data['message'] = "Error de Cambio.";
             }else{
-                $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
+
+                if($customer->password != "#5inCl4ve#"){
+                    $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
+                }else{
+                    $this->plex->createPlexAccountNoPasswordNoCredit($customer->email, $customer);
+                }
+
                 $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
                 if(empty($the_data[0]->invited_id)){
                     $data['success'] = false;

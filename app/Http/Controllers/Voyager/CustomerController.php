@@ -196,6 +196,7 @@ class CustomerController extends VoyagerBaseController
         }
 
         $servers = Server::where('status',1)->server()->get();
+
         if( setting("admin.iphone_only_server") ){
             $servers_pp = Server::where('status',1)->where("is_plex_pass",1)->get();
         }else{

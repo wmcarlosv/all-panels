@@ -339,7 +339,7 @@
                                               <ul class="dropdown-menu dropdown-menu-left" id="menu-list" aria-labelledby="dropdownMenu1" style="position:sticky;">
                                                 <li><a href="#"  class="extend-membership" data-server="{{$data->server->name_and_local_name}}" data-row='{{json_encode($data)}}'>Extender Membresia</a></li>
                                                 @if(setting('admin.extra_options_limited'))
-                                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 3 || Auth::user()->role_id == 5)
+                                                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 3 || Auth::user()->role_id == 5 || Auth::user()->role_id == 4)
                                                         @if($data->status == "active")
                                                             <li><a href="#" class="change-server-modal" data-row='{{json_encode($data)}}'>Cambiar Servidor</a></li>
                                                         @endif
@@ -502,8 +502,15 @@
                         <select id="server_id" class="form-control">
                             <option value="">Seleccione</option>
                             @foreach($servers as $server)
-                                <option value="{{$server->id}}">{{$server->name_and_local_name}}</option>
+                                <option value="{{$server->id}}" data-packages='{{$server->packages}}'>{{$server->name_and_local_name}}</option>
                             @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Paquete:</label>
+                        <select id="package_id" class="form-control">
+                            <option value="">Seleccione</option>
                         </select>
                     </div>
                 </div>
@@ -772,6 +779,20 @@
 
         $(document).ready(function () {
             var id;
+
+            $("#server_id").change(function(){
+                let packages = $(this).children("option:selected").data("packages");
+                console.log(packages);
+                if(packages.length > 0){
+                    $("#package_id").empty();
+                    $("#package_id").html("<option>Seleccione</option>");
+                    $.each(packages, function(v,e){
+                        $("#package_id").append("<option value='"+e.id+"'>"+e.name+"</option>");
+                    });
+                }else{
+                    $("#package_id").html("<option>Seleccione</option>");
+                }
+            });
 
              $("#import-customer-from-magic-button").click(function(){
                 $("#import-customer-from-magic-modal").modal("show");

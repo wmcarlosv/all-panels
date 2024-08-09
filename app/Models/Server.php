@@ -30,7 +30,7 @@ class Server extends Model
         }
 
         if(Auth::user()->role_id == 4 || Auth::user()->role_id == 1 ){
-            
+            return $query->where('status',1)->where('is_demo',0);
         }else{
             if( setting("admin.iphone_only_server") ){
     
