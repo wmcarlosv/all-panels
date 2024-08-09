@@ -97,7 +97,7 @@ class ApiController extends Controller
                 if($customer->password != "#5inCl4ve#"){
                     $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
                 }else{
-                    $this->plex->createPlexAccountNoPasswordNoCredit($customer->email, $customer);
+                    $this->plex->createPlexAccountNoPasswordNoCredit($customer->email, $customer, false);
                 }
                 
                 $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
@@ -145,7 +145,7 @@ class ApiController extends Controller
                 if($customer->password != "#5inCl4ve#"){
                     $this->plex->createPlexAccountNotCredit($customer->email, $customer->password, $customer, false);
                 }else{
-                    $this->plex->createPlexAccountNoPasswordNoCredit($customer->email, $customer);
+                    $this->plex->createPlexAccountNoPasswordNoCredit($customer->email, $customer, false);
                 }
 
                 $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
