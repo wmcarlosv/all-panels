@@ -404,25 +404,11 @@
                         <option value="same_account" selected>Misma Cuenta</option>
                     </select>
                 </div>
-                <!--<div class="form-group col-md-6">
-                    <label for="">Eliminar el viejo servidor y sus cuentas una vez finalizado el proceso?:</label>
-                    <select id="delete_old_server" class="form-control">
-                        <option value="Y">Si</option>
-                        <option value="N" selected>No</option>
-                    </select>
-                </div>-->
                 <div class="form-group col-md-6">
                     <label for="">Como se majeran los paquetes?:</label>
                     <select id="how_set_package" class="form-control">
                         <option value="no_package">Sin paquetes</option>
                         <option value="compare" selected>Comparar con servidor actual</option>
-                        <option value="default_package">Paquete por defecto</option>
-                    </select>
-                </div>
-                <div id="col_package_id" style="display:none;" class="form-group col-md-12">
-                    <label for="">Paquete:</label>
-                    <select id="package_id" class="form-control">
-                        <option value="">Seleccione</option>
                     </select>
                 </div>
                 <div class="col-md-12" style="display: none;" id="content_prefix_email">
@@ -438,6 +424,58 @@
                             <option value="Y">Si</option>
                             <option value="N" selected>No</option>
                         </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="">Tiempo entre cuentas</label>
+                        <select id="cycle-time" class="form-control">
+                            <option value="5000">5 Segundos</option>
+                            <option value="10000">10 Segundos</option>
+                            <option value="15000">15 Segundos</option>
+                            <option value="20000">20 Segundos</option>
+                            <option value="25000">25 Segundos</option>
+                            <option value="30000">30 Segundos</option>
+                            <option value="35000">35 Segundos</option>
+                            <option value="40000">40 Segundos</option>
+                            <option value="45000">45 Segundos</option>
+                            <option value="50000">50 Segundos</option>
+                            <option value="55000">55 Segundos</option>
+                            <option value="60000">60 Segundos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="">Cantidad de cuentas por Ciclo</label>
+                        <input type="number" min="1" max="100" value="1" id="qty_account_by_cycle" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="">Tiempo de espera entre ciclos</label>
+                        <select id="cycle-time-wait" class="form-control">
+                            <option value="10000">10 Segundos</option>
+                            <option value="20000">20 Segundos</option>
+                            <option value="30000">30 Segundos</option>
+                            <option value="40000">40 Segundos</option>
+                            <option value="50000">50 Segundos</option>
+                            <option value="60000">60 Segundos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="">Paquete por defecto: </label>
+                            <select id="package_id" class="form-control">
+                            <option value="">Seleccione</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="">Cantidad de Reintentos si existen errores: </label>
+                        <input type="number" min="1" value="1" id="reentercount" class="form-control">
                     </div>
                 </div>
                 <table class="table table-bordered table-striped">
@@ -457,7 +495,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="save-change-masive-server">Cambiar</button>
+                <button type="button" class="btn btn-success" data-withconfirmation="Y" data-reentercont="0" data-errors="0" id="save-change-masive-server">Cambiar</button>
                 <button type="button" class="btn btn-danger" id="cancel-change-masive-server">Salir</button>
             </div>
         </div>
@@ -482,6 +520,10 @@
     <script>
         var theInterval;
         var indexCustomer = 0;
+        var wconfirmation = true;
+        var reentercount = 0;
+        var contErrors = 0;
+
         $(document).ready(function () {
             var selected_server_id;
 
@@ -496,35 +538,105 @@
             });
 
             $("#save-change-masive-server").click(function(){
+                let wc = $(this).data("withconfirmation");
+                if(wconfirmation){
+                    reentercount = parseInt($("#reentercount").val());
+                    mainCycle();
+                }else{
+                    indexCustomer = -1;
+                    contErrors = parseInt($("#save-change-masive-server").data("errors"));
+                    mainCycle(false); 
+                    reentercount = (reentercount - 1);
+                }
+            });
+
+            function mainCycle(withConfirmation = true){
                 var customers = $("input[name='new_customers[]']:checked");
                 let server_from = $("#id_server_from").val();
                 let server_to = $("#cms_new_server").val();
-                
+                let cycle_time = parseInt($("#cycle-time").val());
+                let qty_account_by_cycle = parseInt($("#qty_account_by_cycle").val());
+                let cycle_time_wait = parseInt($("#cycle-time-wait").val());
+                let package_id = $("#package_id").val();
+                let compareWithCycle = 0;
+                contErrors = 0;
+                $("td.status_col").html("Listo para migrar");
 
                 if(server_from === server_to){
                     alert("Los Servidores seleccionados deben ser distintos!!");
                     return;
                 }
 
-                if(!server_from || !server_to || customers.length <= 0){
-                    alert("Para la importacion debe seleccionar, el servidor desde, servidor hasta y al menos seleccionar un cliente!!");
+                if(!server_from || !server_to || customers.length <= 0 || !package_id){
+                    alert("Para la importacion debe seleccionar, el servidor desde, servidor hasta, paquete por defecto y al menos seleccionar un cliente!!");
                     return;
                 }
 
-                if(confirm("Esta seguro de realizar el movimiento masivo de cuentas?")){
-                    $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", true);
-                    theInterval = setInterval(function(){
+                if(withConfirmation){
+                    if(confirm("Esta seguro de realizar el movimiento masivo de cuentas?")){
+                        $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", true);
+                        theInterval = setInterval(function(){
                             if(indexCustomer >= customers.length){
                                 clearInterval(theInterval);
                                 $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", false);
-                                alert("Proceso de migracion Finalizado..");
+                                if(parseInt($("#save-change-masive-server").data("errors")) > 0 && reentercount > 0){
+                                    console.log("Cantidad de errores: ",contErrors);
+                                    wconfirmation = false;
+                                    $("#save-change-masive-server").attr("data-errors", contErrors);
+                                    $("#save-change-masive-server").trigger("click");
+                                }else{
+                                    $("#save-change-masive-server");
+                                    wconfirmation = true;
+                                    alert("Proceso de migracion Finalizado..");
+                                }
+                                
                             }else{
                                 $("#status_"+customers[indexCustomer].value).html("<p>Cargando...</p>");
                                 movementAccount(customers[indexCustomer].value);
                             }
                             indexCustomer++;
-                        }, 10000);
+
+                        }, cycle_time);
+                    }
+                }else{
+                    $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", true);
+                    theInterval = setInterval(function(){
+                        if(indexCustomer >= customers.length){
+                            clearInterval(theInterval);
+                            $("#save-change-masive-server, #cancel-change-masive-server").attr("disabled", false);
+                            console.log("Errores: "+contErrors,"Ciclos: "+reentercount);
+                            if(parseInt($("#save-change-masive-server").data("errors")) > 0 && reentercount > 0){
+                                wconfirmation = false;
+                                console.log("Entrando en el intento: ",reentercount);
+                                console.log("Cantidad de errores: ",contErrors);
+
+                                $("#save-change-masive-server").attr("data-errors", contErrors);
+                                $("#save-change-masive-server").trigger("click");
+
+                            }else{
+                                wconfirmation = true;
+                                $("#save-change-masive-server").attr("data-errors", 0);
+                                contErrors = 0;
+                                alert("Proceso de migracion Finalizado..");
+                            }
+
+                            
+                        }else{
+                            $("#status_"+customers[indexCustomer].value).html("<p>Cargando...</p>");
+                            movementAccount(customers[indexCustomer].value);
+                        }
+                        indexCustomer++;
+
+                    }, cycle_time);
                 }
+            }
+
+
+            $("body").on('click','a.resend-massive-request', function(e){
+                e.preventDefault();
+                let customer_id = $(this).data('customer-id');
+                $("#status_"+customer_id).html("<p>Cargando...</p>");
+                movementAccount(customer_id);
             });
 
             function movementAccount(customer_selected){
@@ -542,14 +654,16 @@
                     let data = response;
                     if(response.success){
                         $("#status_"+customer_selected).html("<p style='font-weight:bold; color:green;'>Listo</p>");
-                        $("#checked_"+customer_selected).removeAttr("checked").hide();
+                        $("#checked_"+customer_selected).remove();
                         $("#new_email_"+response.customer.id).html(response.customer.email);
 
                         if(response.customer.package_id){
                             $("#package_"+response.customer.id).html(response.customer.package.name);
                         }
                     }else{
-                         $("#status_"+customer_selected).html("<p style='font-weight:bold; color:red;' title='"+response.error+"'>Error</p>");
+                        contErrors++;
+                        $("#save-change-masive-server").attr("data-errors", parseInt(contErrors));
+                         $("#status_"+customer_selected).html("<p style='font-weight:bold; color:red;' title='"+response.error+"'>Error <a href='#' class='resend-massive-request' data-customer-id='"+customer_id+"'>Re-Intentar</a></p>");
                     }
                 });
             }
@@ -571,10 +685,10 @@
                 }
             });
 
-            $("#how_set_package").change(function(){
+            $("#cms_new_server").change(function(){
                 let value = $(this).val();
-                if(value == "default_package"){
-                    let packages = JSON.parse($("#cms_new_server").children("option:selected").attr("data-packages"));
+                if(value){
+                    let packages = JSON.parse($(this).children("option:selected").attr("data-packages"));
                     if(packages.length > 0){
                         $("#package_id").html("<option value=''>Seleccione</option>");
                         $.each(packages, function(v,e){
@@ -583,13 +697,10 @@
                     }else{
                         $("#package_id").html("<option value=''>Seleccione</option>");
                     }
-                        
-                    $("#col_package_id").show();
                 }else{
-                    $("#col_package_id").hide();
+                    $("#package_id").html("<option value=''>Seleccione</option>");
                 }
-
-                $("#package_id").val("");
+                
             });
 
             $("body").on("change","select#id_server_from", function(e){
@@ -605,7 +716,7 @@
                         if(data.length > 0){
                             $("#load-customers").empty();
                             $.each(data, function(v,e){
-                                $("#load-customers").append("<tr><td><input type='checkbox' id='checked_"+e.id+"' name='new_customers[]' value='"+e.id+"' /></td><td>"+e.plex_user_name+"</td><td>"+e.email+"</td><td>"+(e.package ? e.package.name : 'Sin Paquete')+"</td><td id='new_email_"+e.id+"'></td><td id='package_"+e.id+"'></td><td id='status_"+e.id+"'>Listo para migrar</td></tr>");  
+                                $("#load-customers").append("<tr><td><input type='checkbox' id='checked_"+e.id+"' name='new_customers[]' value='"+e.id+"' /></td><td>"+e.plex_user_name+"</td><td><a target='_blank' href='/admin/customers/"+e.id+"/edit'>"+e.email+"</a></td><td>"+(e.package ? e.package.name : 'Sin Paquete')+"</td><td id='new_email_"+e.id+"'></td><td id='package_"+e.id+"'></td><td class='status_col' id='status_"+e.id+"'>Listo para migrar</td></tr>");  
                             });
                         }else{
                             $("#load-customers").html("<tr><td colspan='7' align='center'>Sin Datos</td></tr>");

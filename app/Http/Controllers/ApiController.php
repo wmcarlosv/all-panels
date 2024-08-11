@@ -52,17 +52,22 @@ class ApiController extends Controller
 
         if($how_set_package == "compare"){
               if(!empty($customer->package_id)){
-                foreach($server_to->packages as $package){
-                    if( trim(strtolower($package->name)) == trim(strtolower($customer->package->name)) ){
-                        $newPackage = $package->id;
-                        break;
+                    if(!empty($customer->package)){
+                        foreach($server_to->packages as $package){
+                            if( trim(strtolower($package->name)) == trim(strtolower($customer->package->name)) ){
+                                $newPackage = $package->id;
+                                break;
+                            }
+                        }
+                    }else{
+                        $newPackage = $package_id;
                     }
+
+                }else{
+                    $newPackage = $package_id;
                 }
-            }
-        }else if ($how_set_package == "default_package"){
-            if(!empty($package_id)){
-                $newPackage = $package_id;
-            }
+        }else{
+            $newPackage = $package_id;
         }
 
         //Updated Package
@@ -119,8 +124,9 @@ class ApiController extends Controller
         }else{
              //Delete from Old Server
             $this->plex->setServerCredentials($server_from->url, $server_from->token);
-            $this->plex->provider->removeFriend($customer->invited_id);
-
+            if(!empty($customer->invited_id)){
+                $this->plex->provider->removeFriend($customer->invited_id);
+            }
             //Add to New Server
             $this->plex->setServerCredentials($server_to->url, $server_to->token);
 

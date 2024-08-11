@@ -148,6 +148,11 @@
                                     <h3>Servidor actual:</h3> 
                                     <h2><label for="" class="label label-success">{{ $dataTypeContent->server->name_and_local_name }}</label></h2>
                                 </div>
+
+                                <div class="col-md-12">
+                                    <h3>Vendedor:</h3> 
+                                    <h2><label for="" class="label label-success">{{ $dataTypeContent->user->name }}</label></h2>
+                                </div>
                                 
                             @endif
 
