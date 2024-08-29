@@ -131,7 +131,7 @@ trait PlexHttpClient
         $this->httpClientConfig = [
             CURLOPT_SSLVERSION     => CURL_SSLVERSION_TLSv1_2,
             CURLOPT_SSL_VERIFYPEER => $this->validateSSL,
-            //CURLOPT_SSL_VERIFYHOST => $this->validateSSL
+            //CURLOPT_SSL_VERIFYHOST => true
         ];
 
         // Set default values.

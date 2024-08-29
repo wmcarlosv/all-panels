@@ -20,4 +20,8 @@ class JellyfinServer extends Model
         }
         
     }
+
+    public function scopeByStatus($query){
+        return $query->where('status',1);
+    }
 }

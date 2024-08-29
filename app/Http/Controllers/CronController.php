@@ -106,6 +106,8 @@ class CronController extends Controller
                     $user = json_decode($cjf->json_data, true);
                     if($user){
                         $this->jellyfin->provider->deleteUser($user['Id']);
+                        $cjf->status = false;
+                        $cjf->save();
                         $contadorCJS++;
                     } 
                 }
@@ -121,6 +123,7 @@ class CronController extends Controller
                     $user = json_decode($djf->json_data, true);
                     if($user){
                         $this->jellyfin->provider->deleteUser($user['Id']);
+                        $djf->delete();
                         $contadorDJS++;
                     } 
                 }

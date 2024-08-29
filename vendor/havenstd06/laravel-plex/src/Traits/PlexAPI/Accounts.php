@@ -3,6 +3,7 @@
 namespace Havenstd06\LaravelPlex\Traits\PlexAPI;
 
 use Psr\Http\Message\StreamInterface;
+use GuzzleHttp\Utils;
 
 trait Accounts
 {
@@ -71,7 +72,7 @@ trait Accounts
      */
     public function signIn(array $data, bool $useHeaderToken = false): StreamInterface|array|string
     {
-        $this->apiBaseUrl = $this->config['plex_tv_api_url'];
+        /*$this->apiBaseUrl = $this->config['plex_tv_api_url'];
 
         $this->apiEndPoint = "users/sign_in.json";
 
@@ -89,6 +90,46 @@ trait Accounts
 
         $this->verb = 'post';
 
-        return $this->doPlexRequest();
+        return $this->doPlexRequest();*/
+
+        $apiUrl = "https://plex.tv/api/v2/users/signin";
+        $params = array(
+            'login'=>$data['auth'][0],
+            'password'=>$data['auth'][1]
+        );
+
+        $response =  $this->curlPost($apiUrl, $params);
+        $result = [];
+
+        if ($this->isXml($response)) {
+            $content = str_replace(array("\n", "\r", "\t"), '', $response);
+            $content = trim(str_replace('"', "'", $content));
+            $xml = new \SimpleXMLElement($content);
+
+            $result = Utils::jsonEncode($this->xmlToJson($xml), true);
+        }
+
+        return Utils::jsonDecode($result, true);
+
+    }
+
+    public function curlPost($url, $params){
+        $headers = array(
+            'X-Plex-Client-Identifier: '.uniqid(),
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        curl_close($ch);
+
+        return $response;
     }
 }

@@ -569,7 +569,9 @@ class ComposerStaticInit09e3f56191d83ca3be2c00592aabd947
     );
 
     public static $classMap = array (
+        'App\\Actions\\ConvertJellyfinCustomer' => __DIR__ . '/../..' . '/app/Actions/ConvertJellyfinCustomer.php',
         'App\\Actions\\ExtendSubscriptionAction' => __DIR__ . '/../..' . '/app/Actions/ExtendSubscriptionAction.php',
+        'App\\Actions\\MasiveChangeServerAction' => __DIR__ . '/../..' . '/app/Actions/MasiveChangeServerAction.php',
         'App\\Actions\\RefreshServerLibrariesAction' => __DIR__ . '/../..' . '/app/Actions/RefreshServerLibrariesAction.php',
         'App\\Actions\\ViewActiveSessionsAction' => __DIR__ . '/../..' . '/app/Actions/ViewActiveSessionsAction.php',
         'App\\Console\\Commands\\CheckCustomers' => __DIR__ . '/../..' . '/app/Console/Commands/CheckCustomers.php',
@@ -578,6 +580,7 @@ class ComposerStaticInit09e3f56191d83ca3be2c00592aabd947
         'App\\Http\\Controllers\\ApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/ApiController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CronController' => __DIR__ . '/../..' . '/app/Http/Controllers/CronController.php',
+        'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Controllers\\Voyager\\CreditController' => __DIR__ . '/../..' . '/app/Http/Controllers/Voyager/CreditController.php',
         'App\\Http\\Controllers\\Voyager\\CustomerController' => __DIR__ . '/../..' . '/app/Http/Controllers/Voyager/CustomerController.php',
         'App\\Http\\Controllers\\Voyager\\DemoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Voyager/DemoController.php',

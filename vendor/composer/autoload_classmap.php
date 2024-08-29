@@ -6,7 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Actions\\ConvertJellyfinCustomer' => $baseDir . '/app/Actions/ConvertJellyfinCustomer.php',
     'App\\Actions\\ExtendSubscriptionAction' => $baseDir . '/app/Actions/ExtendSubscriptionAction.php',
+    'App\\Actions\\MasiveChangeServerAction' => $baseDir . '/app/Actions/MasiveChangeServerAction.php',
     'App\\Actions\\RefreshServerLibrariesAction' => $baseDir . '/app/Actions/RefreshServerLibrariesAction.php',
     'App\\Actions\\ViewActiveSessionsAction' => $baseDir . '/app/Actions/ViewActiveSessionsAction.php',
     'App\\Console\\Commands\\CheckCustomers' => $baseDir . '/app/Console/Commands/CheckCustomers.php',
@@ -15,6 +17,7 @@ return array(
     'App\\Http\\Controllers\\ApiController' => $baseDir . '/app/Http/Controllers/ApiController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\CronController' => $baseDir . '/app/Http/Controllers/CronController.php',
+    'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
     'App\\Http\\Controllers\\Voyager\\CreditController' => $baseDir . '/app/Http/Controllers/Voyager/CreditController.php',
     'App\\Http\\Controllers\\Voyager\\CustomerController' => $baseDir . '/app/Http/Controllers/Voyager/CustomerController.php',
     'App\\Http\\Controllers\\Voyager\\DemoController' => $baseDir . '/app/Http/Controllers/Voyager/DemoController.php',

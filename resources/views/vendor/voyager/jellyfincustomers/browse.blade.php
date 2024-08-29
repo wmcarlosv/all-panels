@@ -106,7 +106,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($dataTypeContent as $data)
-                                    <tr @if( strtotime($data->date_to) < strtotime(now()) ) style="background:#f9c2c2;" @endif>
+                                    <tr>
                                         @if($showCheckboxColumn)
                                             <td>
                                                 <input type="checkbox" name="row_id" id="checkbox_{{ $data->getKey() }}" value="{{ $data->getKey() }}">

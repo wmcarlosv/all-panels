@@ -317,6 +317,36 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+    
+    <!--Convertir a Cliente-->
+    <div class="modal modal-success fade" id="jellyfin_convert_customer" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Convertir en Cliente</h4>
+                </div>
+                <form action="">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="">Servidor:</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="">Paquete:</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success">Guardar</button>
+                        <a href="#" id="close_jellyfin_convert_customer" class="btn btn-danger">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -333,6 +363,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
+
+            $("body").on('click','a.convert-customer', function(){
+                $("#jellyfin_convert_customer").modal({"backdrop": 'static', "keyboard":false}, "show");
+            });
+
+            $("#close_jellyfin_convert_customer").click(function(){
+                $("#jellyfin_convert_customer").modal("hide");
+            });
+
+
             @if (!$dataType->server_side)
                 var table = $('#dataTable').DataTable({!! json_encode(
                     array_merge([
