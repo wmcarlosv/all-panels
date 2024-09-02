@@ -332,11 +332,30 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="">Servidor:</label>
-                            <input type="text" class="form-control" />
+                            <input type="text" id="server_name" readonly class="form-control" />
                         </div>
                         <div class="form-group">
                             <label for="">Paquete:</label>
-                            <input type="text" class="form-control" />
+                            <input type="text" id="package_name" readonly class="form-control" />
+                        </div>
+                        <div class="form group">
+                            <label for="">Duracion:</label>
+                            <select name="duration_id" id="duration_id" class="form-control">
+                                <option value="">Seleccione</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Fecha Hasta:</label>
+                            <input type="date" readonly name="date_to" class="form-control" />
+                        </div>
+                        <div class="form group">
+                            <label for="">Pantallas:</label>
+                            <select name="screens" id="screens" class="form-control">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -365,6 +384,10 @@
         $(document).ready(function () {
 
             $("body").on('click','a.convert-customer', function(){
+                let server_name = $(this).data("server-name");
+                let package_name = $(this).data("package-name") ? $(this).data("package-name"): "Sin Paquete";
+                $("#server_name").val(server_name);
+                $("#package_name").val(package_name);
                 $("#jellyfin_convert_customer").modal({"backdrop": 'static', "keyboard":false}, "show");
             });
 

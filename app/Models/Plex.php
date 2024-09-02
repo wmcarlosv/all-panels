@@ -747,14 +747,12 @@ class Plex {
 
     public function setHomeUserPin($user,$pin=""){
         $url = "https://clients.plex.tv/api/v2/home/users/restricted/".$user['user']['id']."?friendlyName=".$user['user']['username']."&pin=".$pin."&X-Plex-Client-Identifier=".uniqid()."&X-Plex-Token=".$user['user']['authToken'];
-        dd($url);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         $pin = simplexml_load_string(curl_exec($ch));
-        dd($pin);
         if (curl_errno($ch)) {
             echo 'cURL error: ' . curl_error($ch);
         }
