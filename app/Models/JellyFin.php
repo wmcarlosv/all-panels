@@ -78,8 +78,6 @@
 				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
 			}else{
 				$laData = json_decode($customer->json_data);
-				$libraries = explode(',',$customer->jellyfinpackage->libraries);
-
 				$library_access_data = array(
 				   	"MaxActiveSessions"=>$customer->screens
 				);
@@ -110,6 +108,13 @@
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
 				    "EnableAllFolders"=>false,
 				    "EnabledFolders"=>$libraries
+				);
+
+				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
+			}else{
+				$laData = json_decode($demo->json_data);
+				$library_access_data = array(
+				   	"MaxActiveSessions"=>$demo->screens
 				);
 
 				$this->provider->updateUserPolicy($laData->Id, $library_access_data);

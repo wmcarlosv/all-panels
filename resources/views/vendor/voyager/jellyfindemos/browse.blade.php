@@ -342,6 +342,7 @@
                             <label for="">Duracion:</label>
                             <select name="duration_id" id="duration_id" class="form-control">
                                 <option value="">Seleccione</option>
+                                 
                             </select>
                         </div>
                         <div class="form-group">
