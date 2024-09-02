@@ -18,6 +18,7 @@ use TCG\Voyager\Http\Controllers\Traits\BreadRelationshipParser;
 use App\Models\JellyfinDemo;
 use App\Models\JellyFin;
 use App\Models\JellyfinServer;
+use App\Models\Duration;
 use Session;
 
 class JellyfinDemoController extends VoyagerBaseController
@@ -181,6 +182,8 @@ class JellyfinDemoController extends VoyagerBaseController
             $view = "voyager::$slug.browse";
         }
 
+        $durations = Duration::whereIn('service',['all','jellyfin'])->get();
+
         return Voyager::view($view, compact(
             'actions',
             'dataType',
@@ -196,7 +199,8 @@ class JellyfinDemoController extends VoyagerBaseController
             'defaultSearchKey',
             'usesSoftDeletes',
             'showSoftDeleted',
-            'showCheckboxColumn'
+            'showCheckboxColumn',
+            'durations'
         ));
     }
 
