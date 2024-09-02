@@ -200,7 +200,7 @@ class JellyfinDemoController extends VoyagerBaseController
             'usesSoftDeletes',
             'showSoftDeleted',
             'showCheckboxColumn',
-            'durations'
+            'durations'=>$durations
         ));
     }
 
