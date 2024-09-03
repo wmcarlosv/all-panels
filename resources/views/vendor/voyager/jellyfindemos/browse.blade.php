@@ -328,7 +328,10 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Convertir en Cliente</h4>
                 </div>
-                <form action="">
+                <form action="{{route('jellyfindemo_to_customers')}}" method="POST">
+                    <input type="hidden" name="demo_id" />
+                    @method('post')
+                    @csrf
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="">Servidor:</label>
@@ -340,18 +343,20 @@
                         </div>
                         <div class="form group">
                             <label for="">Duracion:</label>
-                            <select name="duration_id" id="duration_id" class="form-control">
+                            <select name="duration_id" required id="duration_id" class="form-control">
                                 <option value="">Seleccione</option>
-                                 
+                                 @foreach($durations as $duration)
+                                    <option value="{{$duration->id}}" data-months="{{$duration->months}}">{{$duration->name}}</option>
+                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="">Fecha Hasta:</label>
-                            <input type="date" readonly name="date_to" class="form-control" />
+                            <input type="date" required readonly name="date_to" class="form-control" />
                         </div>
                         <div class="form group">
                             <label for="">Pantallas:</label>
-                            <select name="screens" id="screens" class="form-control">
+                            <select name="screens" required id="screens" class="form-control">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -387,6 +392,8 @@
             $("body").on('click','a.convert-customer', function(){
                 let server_name = $(this).data("server-name");
                 let package_name = $(this).data("package-name") ? $(this).data("package-name"): "Sin Paquete";
+                let demo_id = $(this).data("id");
+                $("input[name='demo_id']").val(demo_id);
                 $("#server_name").val(server_name);
                 $("#package_name").val(package_name);
                 $("#jellyfin_convert_customer").modal({"backdrop": 'static', "keyboard":false}, "show");
@@ -394,6 +401,22 @@
 
             $("#close_jellyfin_convert_customer").click(function(){
                 $("#jellyfin_convert_customer").modal("hide");
+            });
+
+            $("select[name='duration_id']").change(function(){
+                let id = $(this).val();
+                let months = $(this).children(":selected").attr("data-months");
+                var date_to = "{{date('Y-m-d')}}";
+                if(id){
+                   $.get("/api/get-extend-month-durations/"+date_to+"/"+months+"/", function(response){
+                        let data = response;
+                        $("input[name='date_to']").val(data.date);
+
+                   }); 
+               }else{
+                $("input[name='date_to']").val("");
+               }
+                
             });
 
 
@@ -432,7 +455,7 @@
                 Swal.fire({
                   title: 'Estos son los datos que debes darle al cliente!!',
                   icon: 'info',
-                  html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Host: {{$data->jellyfinserver->host}}\nNombre de Usuario: {{$data->name}}\nClave: {{$data->password}}\nPantallas: {{$data->screens}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
+                  html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Host: {{$data->jellyfinserver->host}}\nNombre de Usuario: {{$data->name}}\nClave: {{$data->password}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
                   confirmButtonColor: '#5cb85c',
                   confirmButtonText: 'Copiar y Salir',
                   allowOutsideClick:false

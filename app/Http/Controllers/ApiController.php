@@ -10,6 +10,7 @@ use App\Models\JellyFin;
 use App\Models\Server;
 use App\Models\JellyfinServer;
 use App\Models\JellyfinCustomer;
+use App\Models\JellyfinDemo;
 use Havenstd06\LaravelPlex\Classes\FriendRestrictionsSettings;
 use DB;
 use File;
@@ -1130,6 +1131,52 @@ class ApiController extends Controller
             $customers = Customer::with(['package'])->where('server_id', $server_id)->where('status','active')->get();
         }
         return response()->json($customers);
+    }
+
+    public function jellyfindemo_to_customers(Request $request){
+        $demo = JellyfinDemo::find($request->demo_id);
+        $redirect = redirect()->back();
+        $server = JellyfinServer::find($demo->jellyfinserver_id);
+        $response = $this->jellyfin->setCredentials($server);
+
+        if(!$response){
+            return $redirect->with([
+                'message'    => "Ocurrio un error al conectarse al servidor, verifica que las credenciales sean las Correctas",
+                'alert-type' => 'error',
+            ]);
+        }
+
+        try{
+            DB::beginTransaction();
+            $customer = new JellyfinCustomer();
+            $customer->jellyfinserver_id = $demo->jellyfinserver_id;
+            $customer->jellyfinpackage_id = $demo->jellyfinpackage_id;
+            $customer->duration_id = $request->duration_id;
+            $customer->date_to = $request->date_to;
+            $customer->name = $demo->name;
+            $customer->screens = $request->screens;
+            $customer->password = $demo->password;
+            $customer->json_data = $demo->json_data;
+            $customer->user_id = $demo->user_id;
+            $customer->save();
+
+            $respuesta = $this->jellyfin->deleteCredit($customer);
+            if($respuesta['success']){
+                $this->jellyfin->updateUserPolicy($customer);
+                DB::commit();
+                $demo->delete();
+                return redirect("/admin/jellyfincustomers");
+            }else{
+               DB::rollback();
+               return $redirect->with([
+                    'message'    => $respuesta['message'],
+                    'alert-type' => 'error',
+                ]);
+            }
+
+        }catch(\Exception $e){
+            dd($e);
+        }
     }
 
 }

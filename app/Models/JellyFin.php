@@ -64,6 +64,13 @@
 				}
 			}
 
+			$this->updateUserPolicy($customer);
+
+			return $isValid;
+		}
+
+		public function updateUserPolicy(JellyfinCustomer $customer){
+
 			if($customer->jellyfinpackage){
 				$laData = json_decode($customer->json_data);
 				$libraries = explode(',',$customer->jellyfinpackage->libraries);
@@ -73,19 +80,20 @@
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
 				    "EnableAllFolders"=>false,
 				    "EnabledFolders"=>$libraries,
-				   	"MaxActiveSessions"=>$customer->screens
+				   	"MaxActiveSessions"=>(int) $customer->screens
 				);
 				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
 			}else{
 				$laData = json_decode($customer->json_data);
 				$library_access_data = array(
-				   	"MaxActiveSessions"=>$customer->screens
+					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
+					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
+				   	"MaxActiveSessions"=>(int) $customer->screens
 				);
 
 				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
 			}
 
-			return $isValid;
 		}
 
 		public function createDemo(JellyfinDemo $demo){
@@ -107,17 +115,18 @@
 					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
 				    "EnableAllFolders"=>false,
-				    "EnabledFolders"=>$libraries
+				    "EnabledFolders"=>$libraries,
+				    "MaxActiveSessions"=>(int) $demo->screens
 				);
 
 				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
 			}else{
 				$laData = json_decode($demo->json_data);
 				$library_access_data = array(
-				   	"MaxActiveSessions"=>$demo->screens
+					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
+					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
+				   	"MaxActiveSessions"=>(int) $demo->screens
 				);
-
-				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
 			}
 
 			return $isValid;
