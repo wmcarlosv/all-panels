@@ -102,14 +102,19 @@ class CronController extends Controller
 
             foreach($customersJF as $cjf){
                 if(strtotime($cjf->date_to) < strtotime(date('Y-m-d'))){
-                    $this->jellyfin->setCredentials($cjf->jellyfinserver);
-                    $user = json_decode($cjf->json_data, true);
-                    if($user){
-                        $this->jellyfin->provider->deleteUser($user['Id']);
-                        $cjf->status = false;
-                        $cjf->save();
+                    if(!empty($cjf->jellyfinserver)){
+                        $this->jellyfin->setCredentials($cjf->jellyfinserver);
+                        $user = json_decode($cjf->json_data, true);
+                        if($user){
+                            $this->jellyfin->provider->deleteUser($user['Id']);
+                            $cjf->status = false;
+                            $cjf->save();
+                            $contadorCJS++;
+                        } 
+                    }else{
+                        $cjf->delete();
                         $contadorCJS++;
-                    } 
+                    }
                 }
             }
 
@@ -119,13 +124,18 @@ class CronController extends Controller
 
             foreach($demosJF as $djf){
                 if(strtotime($djf->date_to) < strtotime(date('Y-m-d H:i:s'))){
-                    $this->jellyfin->setCredentials($djf->jellyfinserver);
-                    $user = json_decode($djf->json_data, true);
-                    if($user){
-                        $this->jellyfin->provider->deleteUser($user['Id']);
+                    if(!empty($djf->jellyfinserver)){
+                        $this->jellyfin->setCredentials($djf->jellyfinserver);
+                        $user = json_decode($djf->json_data, true);
+                        if($user){
+                            $this->jellyfin->provider->deleteUser($user['Id']);
+                            $djf->delete();
+                            $contadorDJS++;
+                        } 
+                    }else{
                         $djf->delete();
                         $contadorDJS++;
-                    } 
+                    }
                 }
             }
 

@@ -537,11 +537,14 @@ class JellyfinDemoController extends VoyagerBaseController
             }
 
             if($data){
-                $this->jellyfin->setCredentials($data->jellyfinserver);
-                $user = json_decode($data->json_data, true);
-                if($user){
-                    $this->jellyfin->provider->deleteUser($user['Id']);
-                }   
+
+                if(!empty($data->jellyfinserver)){
+                    $this->jellyfin->setCredentials($data->jellyfinserver);
+                    $user = json_decode($data->json_data, true);
+                    if($user){
+                        $this->jellyfin->provider->deleteUser($user['Id']);
+                    } 
+                }
             }
 
             $res = $data->delete();
