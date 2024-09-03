@@ -32,7 +32,7 @@ class ConvertJellyfinCustomer extends AbstractAction
         return [
             'class' => 'btn btn-success convert-customer',
             'data-id'=>$this->data->id,
-            'data-server-name'=>$this->data->jellyfinserver->name,
+            'data-server-name'=>$this->data->jellyfinserver?->name,
             'data-package-name'=>$this->data->jellyfinpackage?->name
         ];
     }
