@@ -213,7 +213,7 @@ class CustomerController extends VoyagerBaseController
             $users_asigned = User::whereIn("role_id",[5,3])->get();
         }
 
-        $durations = Duration::all();
+        $durations = Duration::whereIn('service',['all','plex'])->get();
 
         return Voyager::view($view, compact(
             'actions',
