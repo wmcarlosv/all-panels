@@ -34,7 +34,7 @@ class ViewActiveSessionsByUserJellyfinAction extends AbstractAction
             return [
                 'class' => 'btn btn-sm btn-primary pull-right view-active-sessions',
                 'data-server_id'=>$this->data->jellyfinserver_id,
-                'data-jellyfin_user_id'=>@$jd['Id'],
+                'data-jellyfin_user_id'=>(!empty($jd['Id']) ? $jd['Id'] : null),
                 'data-jellyfin_user'=>$this->data->name
             ];
         }else{
