@@ -182,7 +182,7 @@ class JellyfinCustomerController extends VoyagerBaseController
             $view = "voyager::$slug.browse";
         }
 
-        $durations = Duration::all();
+        $durations = Duration::whereIn('service',['all','jellyfin'])->get();
         $servers = JellyfinServer::with('packages')->get();
 
         return Voyager::view($view, compact(
