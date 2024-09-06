@@ -182,7 +182,7 @@ trait Users
 
         $this->verb = 'post';
 
-        return $this->doJellyfinRequest();
+        return $this->doJellyfinRequest(false);
     }
 
     /**

@@ -70,5 +70,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('remove-from-server/{server_id}/{invited_id}',[ApiController::class, 'removeFromServer'])->name('removefromserver');
 
     Route::post('jellyfindemos/to/customers', [ApiController::class, 'jellyfindemo_to_customers'])->name("jellyfindemo_to_customers");
+
+    Route::post('jellyfin-change-server',[ApiController::class, 'jellyfin_change_server'])->name('jellyfin_change_server');
+    Route::post('jellyfin-customer-change-password',[ApiController::class, 'jellyfin_customer_change_password'])->name('jellyfin_customer_change_password');
     Voyager::routes();
 });

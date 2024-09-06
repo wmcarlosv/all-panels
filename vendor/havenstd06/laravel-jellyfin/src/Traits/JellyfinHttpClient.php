@@ -186,8 +186,8 @@ trait JellyfinHttpClient
             $response = $this->makeHttpRequest();
 
             $data = $response->getContents();
-
-            return ($decode === false) ? $data : Utils::jsonDecode($data, true);
+            return ($decode === false) ? $data : Utils::jsonDecode($data, true); 
+            
         } catch (RuntimeException $t) {
             return $t->getMessage();
         }

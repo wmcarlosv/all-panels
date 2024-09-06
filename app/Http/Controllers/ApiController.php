@@ -22,6 +22,7 @@ use App\Models\Demo;
 use Auth;
 use Storage;
 use Carbon\Carbon;
+use GuzzleHttp\Utils;
 
 class ApiController extends Controller
 {
@@ -1165,18 +1166,140 @@ class ApiController extends Controller
                 $this->jellyfin->updateUserPolicy($customer);
                 DB::commit();
                 $demo->delete();
-                return redirect("/admin/jellyfincustomers");
             }else{
                DB::rollback();
                return $redirect->with([
                     'message'    => $respuesta['message'],
-                    'alert-type' => 'error',
+                    'alert-type' => 'error'
                 ]);
             }
 
         }catch(\Exception $e){
-            dd($e);
+            
         }
+
+        return redirect("/admin/jellyfincustomers")->with([
+            'message'=>"Demo convertido a cliente de manera exitosa",
+            'alert-type'=>'success'
+        ]);
+    }
+
+    public function jellyfin_customer_change_password(Request $request){
+        $redirect = redirect()->back();
+        $errors = 0;
+        $customer_id = $request->change_password_jellyfin_customer_id;
+
+        DB::beginTransaction();
+
+        $customer = JellyfinCustomer::find($customer_id);
+
+        $server = JellyfinServer::find($customer->jellyfinserver_id);
+        $response = $this->jellyfin->setCredentials($server);
+        if($response){
+
+            $jdata = json_decode($customer->json_data, true);
+            $this->jellyfin->provider->deleteUser($jdata['Id']);
+
+            $customer->password = $request->new_password;
+            $customer->save();
+
+            if(!$this->jellyfin->createUser($customer)){
+                $errors++;
+            }
+        }else{
+            $errors++;
+        }
+
+        if($errors > 0){
+            DB::rollback();
+                return $redirect->with([
+                'message'    => "Ocurrio un error al tratar de cambiar la clave",
+                'alert-type' => 'error',
+            ]);
+        }else{
+            DB::commit();
+            return $redirect->with([
+                'message'    => "Cambio de Clave de manera exitosa",
+                'alert-type' => 'success',
+            ]);
+        }
+    }
+
+    public function view_sessions_by_user_jellyfin(Request $request){
+        $data = [];
+        $server_id = $request->server_id;
+        $jellyfin_user_id = $request->jellyfin_user_id;
+        $server = JellyfinServer::find($server_id);
+        $response = $this->jellyfin->setCredentials($server);
+        $result = $this->jellyfin->provider->getSystemLogEntries();
+        if($result){
+           foreach($result['Items'] as $rs){
+                if($rs['UserId'] === $jellyfin_user_id){
+                    $data[] = $rs;
+                }
+            } 
+        }
+        return response()->json($data);
+    }
+
+    public function jellyfin_change_server(Request $request){
+        $change_server_jellyfin_customer_id = $request->change_server_jellyfin_customer_id;
+        $jellyfin_server_id = $request->jellyfin_server_id;
+        $jellyfin_package_id = $request->jellyfin_package_id;
+        $errors = 0;
+        $redirect = redirect()->back();
+
+        DB::beginTransaction();
+        
+        $customer = JellyfinCustomer::find($change_server_jellyfin_customer_id);
+
+        if(!empty($customer->json_data)){
+            $old_server = JellyfinServer::find($customer->jellyfinserver_id);
+            $old_response = $this->jellyfin->setCredentials($old_server);
+            $user = json_decode($customer->json_data, true);
+            if($old_response){
+                $this->jellyfin->provider->deleteUser($user['Id']);
+            }else{
+                $errors++;
+            }
+
+            $new_server = JellyfinServer::find($jellyfin_server_id);
+            $new_response = $this->jellyfin->setCredentials($new_server);
+
+            if(!empty($jellyfin_package_id)){
+                $customer->jellyfinpackage_id = $jellyfin_package_id;
+            }else{
+                $customer->jellyfinpackage_id = null;
+            }
+
+            $customer->jellyfinserver_id = $jellyfin_server_id;
+            $customer->save();
+
+            if($new_response){
+                if(!$this->jellyfin->createUser($customer)){
+                    $errors++;
+                }
+            }else{ 
+                $errors++;
+            }
+        }else{
+            $errors++;
+        }
+
+        if($errors > 0){
+            DB::rollback();
+            return $redirect->with([
+                'message'    => "Ocurrio un error a realizar al cambio de Servidor",
+                'alert-type' => 'error'
+            ]);
+        }else{
+            DB::commit();
+        }
+
+        return $redirect->with([
+                'message'    => "Cambio de Servidor Exitoso",
+                'alert-type' => 'success'
+            ]);
     }
 
 }

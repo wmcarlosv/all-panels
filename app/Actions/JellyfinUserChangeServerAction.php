@@ -4,11 +4,11 @@ namespace App\Actions;
 
 use TCG\Voyager\Actions\AbstractAction;
 
-class ExtendSubscriptionAction extends AbstractAction
+class JellyfinUserChangeServerAction extends AbstractAction
 {
     public function getTitle()
     {
-        return 'Extender Membresia';
+        return 'Cambiar de Servidor';
     }
 
     public function getIcon()
@@ -30,10 +30,9 @@ class ExtendSubscriptionAction extends AbstractAction
     public function getAttributes()
     {
         return [
-            'class' => 'btn btn-sm btn-success pull-right extend-subscription',
-            'data-id'=>$this->data->id,
-            'data-date_to'=>$this->data->date_to,
-            'style'=>"margin-right:5px;"
+            'class' => 'btn btn-sm btn-success pull-right change-server',
+            'data-server_id'=>$this->data->jellyfinserver_id,
+            'data-jellyfin_user_id'=>$this->data->id
         ];
     }
 

@@ -169,4 +169,13 @@ trait System
 
         return $this->doJellyfinRequest(false);
     }
+
+    public function getSystemLogEntries(){
+        $this->apiBaseUrl = $this->config['server_api_url'];
+        $this->apiEndPoint = "System/ActivityLog/Entries";
+        $this->setRequestQuery('limit', 100);
+        $this->setRequestQuery('minData', date('Y-m-d'));
+        $this->verb = 'get';
+        return $this->doJellyfinRequest();
+    }
 }

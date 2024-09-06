@@ -23,4 +23,5 @@ trait JellyfinAPI
     use Libraries;
     use System;
     use Users;
+    use Sessions;
 }

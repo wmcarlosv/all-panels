@@ -4,16 +4,16 @@ namespace App\Actions;
 
 use TCG\Voyager\Actions\AbstractAction;
 
-class MasiveChangeServerAction extends AbstractAction
+class ChangePasswordJellyfinCustomerAction extends AbstractAction
 {
     public function getTitle()
     {
-        return 'Masivo';
+        return 'Cambiar Clave';
     }
 
     public function getIcon()
     {
-        return 'voyager-double-right';
+        return 'voyager-person';
     }
 
     public function getPolicy()
@@ -23,16 +23,15 @@ class MasiveChangeServerAction extends AbstractAction
 
     public function shouldActionDisplayOnDataType()
     {
-        return $this->dataType->slug == 'servers';
+        return $this->dataType->slug == 'jellyfincustomers';
     }
 
 
     public function getAttributes()
     {
         return [
-            'class' => 'btn btn-success change-masive-server',
-            'data-server-id'=>$this->data->id,
-            'data-server-name'=>$this->data->name_and_local_name
+            'class' => 'btn btn-success change-password',
+            'data-id'=>$this->data->id
         ];
     }
 

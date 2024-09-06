@@ -79,6 +79,7 @@
 					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
 				    "EnableAllFolders"=>false,
+				    "EnableContentDownloading"=>false,
 				    "EnabledFolders"=>$libraries,
 				   	"MaxActiveSessions"=>(int) $customer->screens
 				);
@@ -88,7 +89,8 @@
 				$library_access_data = array(
 					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
-				   	"MaxActiveSessions"=>(int) $customer->screens
+				   	"MaxActiveSessions"=>(int) $customer->screens,
+				   	"EnableContentDownloading"=>false
 				);
 
 				$this->provider->updateUserPolicy($laData->Id, $library_access_data);

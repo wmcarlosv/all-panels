@@ -356,6 +356,94 @@
             </div>
         </div>
     </div>
+
+    <div class="modal modal-success fade" tabindex="-1" id="change_password" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cambiar Clave</h4>
+                </div>
+                <form action="{{route('jellyfin_customer_change_password')}}" method="POST">
+                    @method('POST')
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" id="change_password_jellyfin_customer_id" name="change_password_jellyfin_customer_id">
+                        <div class="form-group">
+                            <label for="">Nueva Clave:</label>
+                            <input type="text" required name="new_password" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success">Cambiar</button>
+                        <button type="button" class="btn btn-danger pull-right" id="change_password_close_modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-success fade" tabindex="-1" id="view_sessions" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Actividad del Usuario (<span id="current_user">Usuario</span>)</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <th>Nombre</th>
+                            <th>Direccion</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Severidad</th>
+                        </thead>
+                        <tbody id="loadSessions"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-right" id="view_sessions_close_modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-success fade" tabindex="-1" id="change_server" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cambiar de Servidor</h4>
+                </div>
+                <form action="{{route('jellyfin_change_server')}}" method="POST">
+                    @method('POST')
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" id="change_server_jellyfin_customer_id" name="change_server_jellyfin_customer_id">
+                        <div class="form-group">
+                            <label for="">Nuevo Servidor:</label>
+                            <select name="jellyfin_server_id" required class="form-control">
+                                <option value="">Seleccione</option>
+                                @foreach($servers as $server)
+                                <option value="{{$server->id}}" id="server_{{$server->id}}" data-packages='{{json_encode($server->packages)}}'>{{$server->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Nuevo Package:</label>
+                            <select name="jellyfin_package_id" class="form-control">
+                                <option value="">Seleccione</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success">Cambiar</button>
+                        <button type="button" class="btn btn-danger pull-right" id="change_server_close_modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @stop
 
 @section('css')
@@ -371,7 +459,62 @@
     @endif
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        var currentServer;
         $(document).ready(function () {
+
+            $("body").on('click','a.change-server', function(){
+                currentServer = $(this).data('server_id');
+                $("#server_"+currentServer).hide();
+                $("#change_server_jellyfin_customer_id").val($(this).data("jellyfin_user_id"));
+                $("#change_server").modal({keyboard:false, backdrop: 'static'}, 'show');
+            });
+
+            $("#change_server_close_modal").click(function(){
+                $("#server_"+currentServer).show();
+                $("#change_server").modal('hide');
+            });
+
+            $("select[name='jellyfin_server_id']").change(function(){
+                let packages = $(this).children("option:selected").attr("data-packages");
+                $("select[name='jellyfin_package_id']").empty();
+                if(packages){
+                    packages = JSON.parse(packages);
+                    if(packages.length > 0){
+                        $("select[name='jellyfin_package_id']").html("<option value=''>Seleccione</option>");
+                        $.each(packages, function(v,e){
+                            $("select[name='jellyfin_package_id']").append("<option value='"+e.id+"'>"+e.name+"</option>");
+                        });
+
+                        return;
+                    }
+                }
+
+                $("select[name='jellyfin_package_id']").html("<option value=''>Seleccione</option>");
+            });
+
+            $("body").on('click','a.view-active-sessions', function(){
+                let jellyfin_user = $(this).data("jellyfin_user");
+                $("#current_user").text(jellyfin_user);
+                let server_id = $(this).data("server_id");
+                let jellyfin_user_id = $(this).data('jellyfin_user_id');
+                $.post("{{route('view_sessions_by_user_jellyfin')}}", { server_id:server_id, jellyfin_user_id:jellyfin_user_id }, function(response){
+                    $("#loadSessions").html("<tr><td colspan='5' align='center'>Cargando...</td></tr>");
+                    if(response.length > 0){
+                        $("#loadSessions").empty();
+                        $.each(response, function(i,e){
+                            $("#loadSessions").append("<tr><td>"+e.Name+"</td><td>"+(e.ShortOverview ? e.ShortOverview : 'Sin Direccion')+"</td><td>"+e.Type+"</td><td>"+e.Date+"</td><td>"+e.Severity+"</td></tr>");
+                        });
+                    }else{
+                        $("#loadSessions").html("<tr><td colspan='5' align='center'>Sin Datos</td></tr>");
+                    }
+                });
+
+                $("#view_sessions").modal({backdrop:'static',keyboard:false},'show');
+            });
+
+            $("#view_sessions_close_modal").click(function(){
+                $("#view_sessions").modal('hide');
+            });
 
             $("body").on("click","a.extend-subscription", function(){
                 let id = $(this).attr("data-id");
@@ -379,6 +522,15 @@
                 $("input[name='jellyfin_customer_id']").val(id);
                 $("#current_date_to").val(current_date_to);
                 $("#extend_subscription").modal({backdrop:'static',keyboard:false},'show');
+            });
+
+            $("body").on('click','a.change-password', function(){
+                $("#change_password_jellyfin_customer_id").val($(this).data("id"));
+                $("#change_password").modal({keyboard: false, backdrop: 'static'}, "show");
+            });
+
+            $("#change_password_close_modal").click(function(){
+                $("#change_password").modal("hide");
             });
 
             $("#close_modal").click(function(){
@@ -444,7 +596,7 @@
                 Swal.fire({
                   title: 'Estos son los datos que debes darle al cliente!!',
                   icon: 'info',
-                  html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Host: {{$data->jellyfinserver->host}}\nNombre de Usuario: {{$data->name}}\nClave: {{$data->password}}\nPantallas: {{$data->screens}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
+                  html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Servidor: {{$data->jellyfinserver->host}}\nNombre de Usuario: {{$data->name}}\nClave: {{$data->password}}\nPantallas: {{$data->screens}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
                   confirmButtonColor: '#5cb85c',
                   confirmButtonText: 'Copiar y Salir',
                   allowOutsideClick:false

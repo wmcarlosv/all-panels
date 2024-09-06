@@ -183,6 +183,7 @@ class JellyfinCustomerController extends VoyagerBaseController
         }
 
         $durations = Duration::all();
+        $servers = JellyfinServer::with('packages')->get();
 
         return Voyager::view($view, compact(
             'actions',
@@ -200,7 +201,8 @@ class JellyfinCustomerController extends VoyagerBaseController
             'usesSoftDeletes',
             'showSoftDeleted',
             'showCheckboxColumn',
-            'durations'
+            'durations',
+            'servers'
         ));
     }
 

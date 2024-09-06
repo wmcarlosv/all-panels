@@ -21,6 +21,10 @@ class JellyfinServer extends Model
         
     }
 
+    public function packages(){
+        return $this->hasMany(JellyfinPackage::class,'jellyfinserver_id','id');
+    }
+
     public function scopeByStatus($query){
         return $query->where('status',1);
     }
