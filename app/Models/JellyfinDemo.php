@@ -38,7 +38,7 @@ class JellyfinDemo extends Model
     }
 
     public function scopeByUser($query){
-       if(Auth::user()->role_id == 3 || Auth::user()->role_id == 5 || Auth::user()->role_id == 4){
+       if(Auth::user()->role_id == 3 || Auth::user()->role_id == 5){
             $query->where('user_id',Auth::user()->id);
        }
     }
