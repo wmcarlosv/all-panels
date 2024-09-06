@@ -140,9 +140,11 @@ class Plex {
 
            $plexUser['user']['last_notification'] = date('Y-m-d H:i:s');
            $jsonData = json_encode($plexUser);
-            $name = $plexUser['user']['email'];
-            $filePath = $publicPath . '/jsonfiles/'.$name.'.json';
-            File::put($filePath, $jsonData); 
+            if(array_key_exists("email", $plexUser['user']
+                $name = $plexUser['user']['email'];
+                $filePath = $publicPath . '/jsonfiles/'.$name.'.json';
+                File::put($filePath, $jsonData);
+            }
         }
         
         return $plexUser;
