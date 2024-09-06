@@ -388,7 +388,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-
+            @php
+                $host = request()->getHttpHost();
+            @endphp
             $("body").on('click','a.convert-customer', function(){
                 let server_name = $(this).data("server-name");
                 let package_name = $(this).data("package-name") ? $(this).data("package-name"): "Sin Paquete";
@@ -455,7 +457,7 @@
                 Swal.fire({
                   title: 'Estos son los datos que debes darle al cliente!!',
                   icon: 'info',
-                  html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>**Jellyfin**\nServidor: {{$data->jellyfinserver->host}}\nNombre de Usuario: {{$data->name}}\nClave: {{$data->password}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
+                  html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Panel:{{$host}}\n**Jellyfin**\nServidor: {{$data->jellyfinserver->host}}\nNombre de Usuario: {{$data->name}}\nClave: {{$data->password}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
                   confirmButtonColor: '#5cb85c',
                   confirmButtonText: 'Copiar y Salir',
                   allowOutsideClick:false
