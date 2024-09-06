@@ -30,11 +30,11 @@ class ViewActiveSessionsByUserJellyfinAction extends AbstractAction
     public function getAttributes()
     {
         $jd = json_decode($this->data->json_data, true);
-        if($jd){
+        if(!empty($jd) && $this->data->status == true){
             return [
                 'class' => 'btn btn-sm btn-primary pull-right view-active-sessions',
                 'data-server_id'=>$this->data->jellyfinserver_id,
-                'data-jellyfin_user_id'=>$jd['Id'],
+                'data-jellyfin_user_id'=>@$jd['Id'],
                 'data-jellyfin_user'=>$this->data->name
             ];
         }else{
