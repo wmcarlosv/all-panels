@@ -345,7 +345,7 @@
                         </div>
                         <div class="form-group">
                             <label for="">Nueva Fecha Hasta:</label>
-                            <input type="date" name="date_to" readonly class="form-control" />
+                            <input type="date" name="date_to" class="form-control" />
                         </div>
                     </div>
                     <div class="modal-footer">
