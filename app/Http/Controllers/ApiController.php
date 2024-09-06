@@ -1298,7 +1298,8 @@ class ApiController extends Controller
 
         return $redirect->with([
                 'message'    => "Cambio de Servidor Exitoso",
-                'alert-type' => 'success'
+                'alert-type' => 'success',
+                'modal'=>$customer
             ]);
     }
 
