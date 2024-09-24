@@ -140,9 +140,13 @@ class Plex {
 
            $plexUser['user']['last_notification'] = date('Y-m-d H:i:s');
            $jsonData = json_encode($plexUser);
-            $name = $plexUser['user']['email'];
-            $filePath = $publicPath . '/jsonfiles/'.$name.'.json';
-            File::put($filePath, $jsonData);  
+            if(array_key_exists('email', $plexUser['user'])){
+                $name = $plexUser['user']['email'];
+                $filePath = $publicPath . '/jsonfiles/'.$name.'.json';
+                File::put($filePath, $jsonData);  
+            }else{
+                return null;
+            }
         }
         
         return $plexUser;
@@ -1000,24 +1004,26 @@ class Plex {
 
     public function getRealAccountServerData($data_user){
         $data_array = [];
-        $contador = 0;
-        $url = "https://clients.plex.tv/api/v2/shared_servers/owned/accepted?X-Plex-Client-Identifier=".uniqid()."&X-Plex-Token=".$data_user['user']['authToken'];
-        $opts = [
-            "http" => [
-                "method" => "GET"
-            ]
-        ];
+        if(array_key_exists('authToken', $data_user['user'])){
+            $contador = 0;
+            $url = "https://clients.plex.tv/api/v2/shared_servers/owned/accepted?X-Plex-Client-Identifier=".uniqid()."&X-Plex-Token=".$data_user['user']['authToken'];
+            $opts = [
+                "http" => [
+                    "method" => "GET"
+                ]
+            ];
 
-        $context = stream_context_create($opts);
-        $response = file_get_contents($url, false, $context);
-        $data = simplexml_load_string($response);
+            $context = stream_context_create($opts);
+            $response = file_get_contents($url, false, $context);
+            $data = simplexml_load_string($response);
 
-        foreach($data->sharedServer as $user){
-            $data_array[$contador]['id'] = (int)$user->invited->attributes()->{'id'};
-            $data_array[$contador]['username'] = (string)$user->invited->attributes()->{'username'};
-            $data_array[$contador]['email'] = (string)$user->invited->attributes()->{'email'};
-            $data_array[$contador]['status'] = (string)$user->invited->attributes()->{'status'};
-            $contador++;
+            foreach($data->sharedServer as $user){
+                $data_array[$contador]['id'] = (int)$user->invited->attributes()->{'id'};
+                $data_array[$contador]['username'] = (string)$user->invited->attributes()->{'username'};
+                $data_array[$contador]['email'] = (string)$user->invited->attributes()->{'email'};
+                $data_array[$contador]['status'] = (string)$user->invited->attributes()->{'status'};
+                $contador++;
+            }
         }
 
         return $data_array;
