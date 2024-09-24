@@ -424,7 +424,7 @@
                             <select name="jellyfin_server_id" required class="form-control">
                                 <option value="">Seleccione</option>
                                 @foreach($servers as $server)
-                                <option value="{{$server->id}}" id="server_{{$server->id}}" data-packages='{{json_encode($server->packages)}}'>{{$server->name}}</option>
+                                <option value="{{$server->id}}" id="server_{{$server->id}}" data-packages='{{json_encode($server->packages)}}'>{{$server->name}} (@if($server->status == 1) Activo @else Inactivo @endif)</option>
                                 @endforeach
                             </select>
                         </div>
