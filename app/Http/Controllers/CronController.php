@@ -105,7 +105,7 @@ class CronController extends Controller
                     if(!empty($cjf->jellyfinserver)){
                         $this->jellyfin->setCredentials($cjf->jellyfinserver);
                         $user = json_decode($cjf->json_data, true);
-                        if($user){
+                        if(is_array($user)){
                             if(array_key_exists('Id', $user)){
                                 $this->jellyfin->provider->deleteUser($user['Id']);
                             }
@@ -129,7 +129,7 @@ class CronController extends Controller
                     if(!empty($djf->jellyfinserver)){
                         $this->jellyfin->setCredentials($djf->jellyfinserver);
                         $user = json_decode($djf->json_data, true);
-                        if($user){
+                        if(is_array($user)){
                             if(array_key_exists('Id', $user)){
                                 $this->jellyfin->provider->deleteUser($user['Id']);
                             }
