@@ -379,20 +379,25 @@ class ServerController extends VoyagerBaseController
 
         $plex_data = $this->plex->provider->getFriends();
 
+        $accounts = [];
+        $message = "";
+        $owner = null;
+
         if(!is_array($plex_data)){
-            $redirect = redirect()->back();
-            return $redirect->with([
+            //$redirect = redirect()->back();
+
+            $message = ", Sin embargo el servidor presento errores en las credenciales";
+            /*return $redirect->with([
                 'message'    => __('Las credenciales son invalidas, por favor verifica el correo, username o clave!!'),
                 'alert-type' => 'error',
-            ]);
+            ]);*/
+        }else{
+            $owner = $this->plex->loginInPlex($request->url, $request->token);
+            $accounts = $this->plex->getRealAccountServerData($owner);
+            $request->merge(['accounts_count'=>count($accounts)]);
         }
-
-        $accounts = [];
         
-        $owner = $this->plex->loginInPlex($request->url, $request->token);
-        $accounts = $this->plex->getRealAccountServerData($owner);
-
-        $request->merge(['accounts_count'=>count($accounts)]);
+        
         
         
 
@@ -471,7 +476,7 @@ class ServerController extends VoyagerBaseController
         }
 
         return $redirect->with([
-            'message'    => __('voyager::generic.successfully_updated')." {$dataType->getTranslatedAttribute('display_name_singular')}",
+            'message'    => __('voyager::generic.successfully_updated')." {$dataType->getTranslatedAttribute('display_name_singular')}".$message,
             'alert-type' => 'success',
         ]);
     }
