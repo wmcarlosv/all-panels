@@ -381,6 +381,9 @@ class JellyfinCustomerController extends VoyagerBaseController
             $redirect = redirect()->back();
         }
 
+        $la_data = JellyfinCustomer::find($id);
+        Session::flash('modal', $la_data);
+
         return $redirect->with([
             'message'    => __('voyager::generic.successfully_updated')." {$dataType->getTranslatedAttribute('display_name_singular')}",
             'alert-type' => 'success',

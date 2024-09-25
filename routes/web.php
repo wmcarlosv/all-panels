@@ -73,5 +73,8 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::post('jellyfin-change-server',[ApiController::class, 'jellyfin_change_server'])->name('jellyfin_change_server');
     Route::post('jellyfin-customer-change-password',[ApiController::class, 'jellyfin_customer_change_password'])->name('jellyfin_customer_change_password');
+
+    Route::post('jellyfin-activate-device', [ApiController::class, 'jellyfin_activate_device'])->name('jellyfin_activate_device');
+    Route::post('jellyfin-change-user', [ApiController::class, 'jellyfin_change_user'])->name('jellyfin_change_user');
     Voyager::routes();
 });

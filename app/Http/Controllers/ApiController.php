@@ -1303,4 +1303,51 @@ class ApiController extends Controller
             ]);
     }
 
+    public function jellyfin_activate_device(Request $request){
+        $redirect = redirect()->back();
+        $type = $request->type;
+        $id = $request->id;
+        $code = $request->code;
+        $element = null;
+
+        if($type == "demo"){
+            $element = JellyfinDemo::find($id);
+        }else{
+            $element = JellyfinCustomer::find($id);
+        }
+
+        $server = JellyfinServer::find($element->jellyfinserver_id);
+        $response = $this->jellyfin->setCredentials($server);
+
+        if($response){
+            $user = json_decode($element->json_data, true);
+            $data = $this->jellyfin->provider->UserQuickConnect($code,$user['Id']);
+            if(intval($data) == 1){
+
+                return $redirect->with([
+                    'message'    => "Activacion de Dispositivo de manera exitosa!!",
+                    'alert-type' => 'success',
+                ]);
+            }
+        }
+
+        return $redirect->with([
+            'message'    => "Ocurrio un error al tratar de activar el dispositivo!!",
+            'alert-type' => 'error'
+        ]);
+    }
+
+    public function jellyfin_change_user(Request $request){
+        $redirect = redirect()->back();
+        $customer_id = $request->id;
+        $user_id = $request->user_id;
+        $customer = JellyfinCustomer::find($customer_id);
+        $customer->user_id = $user_id;
+        $customer->save();
+
+        return $redirect->with([
+            'message'    => "Asignacion realizada correctamente!!",
+            'alert-type' => 'success',
+        ]);
+    }
 }

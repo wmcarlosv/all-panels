@@ -372,6 +372,34 @@
             </div>
         </div>
     </div>
+
+    <!--Modal Activate in Device-->
+    <div class="modal modal-success fade" tabindex="-1" id="activate_device" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Activar en Dispositivo</h4>
+                </div>
+                <form method="POST" action="{{route('jellyfin_activate_device')}}">
+                    @method('POST')
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="activate_device_id" />
+                        <input type="hidden" name="type" value="demo" />
+                        <div class="form-group">
+                            <label>Codigo:</label>
+                            <input type="text" name="code" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success">Activar</button>
+                        <a class="btn btn-danger" id="close_activate_device" href="#">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -391,6 +419,17 @@
             @php
                 $host = request()->getHttpHost();
             @endphp
+
+            $("body").on('click','a.connect-device', function(){
+                let id = $(this).data("id");
+                $("#activate_device_id").val(id);
+                $("#activate_device").modal({"backdrop": 'static', "keyboard":false}, "show");
+            });
+
+            $("#close_activate_device").click(function(){
+                $("#activate_device").modal("hide");
+            });
+
             $("body").on('click','a.convert-customer', function(){
                 let server_name = $(this).data("server-name");
                 let package_name = $(this).data("package-name") ? $(this).data("package-name"): "Sin Paquete";

@@ -444,6 +444,70 @@
         </div>
     </div>
 
+    <!--Modal Activate in Device-->
+    <div class="modal modal-success fade" tabindex="-1" id="activate_device" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Activar en Dispositivo</h4>
+                </div>
+                <form method="POST" action="{{route('jellyfin_activate_device')}}">
+                    @method('POST')
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="activate_device_id" />
+                        <input type="hidden" name="type" value="customer" />
+                        <div class="form-group">
+                            <label>Codigo:</label>
+                            <input type="text" name="code" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success">Activar</button>
+                        <a class="btn btn-danger" id="close_activate_device" href="#">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal Activate in Device-->
+    <div class="modal modal-success fade" tabindex="-1" id="asing-to-user-modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Cambiar de Usuario</h4>
+                </div>
+                <form method="POST" action="{{route('jellyfin_change_user')}}">
+                    @method('POST')
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="asing-to-user_id" />
+                        <div class="form-group">
+                            <label>Usuario:</label>
+                            <select class="form-control" name="user_id">
+                                <option>Seleccione</option>
+                                @php 
+                                    $users = \App\Models\User::whereIn('role_id',[3,5])->get();
+                                @endphp
+
+                                @foreach($users as $user)
+                                    <option value="{{$user->id}}">{{$user->name}} ({{$user->role->name}})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success">Cambiar</button>
+                        <a class="btn btn-danger" id="close-asing-to-user-modal" href="#">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @stop
 
 @section('css')
@@ -464,6 +528,27 @@
             @php
                 $host = request()->getHttpHost();
             @endphp
+
+            $("body").on('click','a.asing-to-user', function(){
+                let id = $(this).data("id");
+                $("#asing-to-user_id").val(id);
+                $("#asing-to-user-modal").modal({"backdrop": 'static', "keyboard":false}, "show");
+            });
+
+            $("#close-asing-to-user-modal").click(function(){
+                $("#asing-to-user-modal").modal("hide");
+            });
+
+            $("body").on('click','a.connect-device', function(){
+                let id = $(this).data("id");
+                $("#activate_device_id").val(id);
+                $("#activate_device").modal({"backdrop": 'static', "keyboard":false}, "show");
+            });
+
+            $("#close_activate_device").click(function(){
+                $("#activate_device").modal("hide");
+            });
+
             $("body").on('click','a.change-server', function(){
                 currentServer = $(this).data('server_id');
                 $("#server_"+currentServer).hide();

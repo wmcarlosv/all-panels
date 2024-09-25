@@ -227,6 +227,19 @@ trait Users
         return $this->doJellyfinRequest();
     }
 
+    public function UserQuickConnect(string $code, string $userId){
+        $this->apiBaseUrl = $this->config['server_api_url'];
+
+        $this->apiEndPoint = "QuickConnect/Authorize";
+
+        $this->setRequestQuery('code', $code);
+        $this->setRequestQuery('userId', $userId);
+        
+        $this->verb = 'post';
+
+        return $this->doJellyfinRequest();
+    }
+
     /**
      * Redeems a forgot password pin.
      *
