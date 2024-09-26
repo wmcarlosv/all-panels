@@ -409,6 +409,7 @@
                     <select id="how_set_package" class="form-control">
                         <option value="no_package">Sin paquetes</option>
                         <option value="compare" selected>Comparar con servidor actual</option>
+                        <option value="default_package">Paquete por Defecto</option>
                     </select>
                 </div>
                 <div class="col-md-12" style="display: none;" id="content_prefix_email">
@@ -426,7 +427,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-12">
                     <div class="form-group">
                         <label for="">Tiempo entre cuentas</label>
                         <select id="cycle-time" class="form-control">
@@ -445,7 +446,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <!--<div class="col-md-4">
                     <div class="form-group">
                         <label for="">Cantidad de cuentas por Ciclo</label>
                         <input type="number" min="1" max="100" value="1" id="qty_account_by_cycle" class="form-control" />
@@ -463,8 +464,8 @@
                             <option value="60000">60 Segundos</option>
                         </select>
                     </div>
-                </div>
-                <div class="col-md-12">
+                </div>-->
+                <div class="col-md-12" id="content_default_package" style="display:none;">
                     <div class="form-group">
                         <label for="">Paquete por defecto: </label>
                             <select id="package_id" class="form-control">
@@ -559,6 +560,7 @@
                 let cycle_time_wait = parseInt($("#cycle-time-wait").val());
                 let package_id = $("#package_id").val();
                 let compareWithCycle = 0;
+                let how_set_package = $("#how_set_package").val();
                 contErrors = 0;
                 $("td.status_col").html("Listo para migrar");
 
@@ -567,9 +569,16 @@
                     return;
                 }
 
-                if(!server_from || !server_to || customers.length <= 0 || !package_id){
+                if(!server_from || !server_to || customers.length <= 0){
                     alert("Para la importacion debe seleccionar, el servidor desde, servidor hasta, paquete por defecto y al menos seleccionar un cliente!!");
                     return;
+                }else{
+                    if(how_set_package == "default_package"){
+                        if(!package_id){
+                            alert("Es necesario establecer un paquete por defecto");
+                            return;
+                        }
+                    }
                 }
 
                 if(withConfirmation){
@@ -637,6 +646,16 @@
                 let customer_id = $(this).data('customer-id');
                 $("#status_"+customer_id).html("<p>Cargando...</p>");
                 movementAccount(customer_id);
+            });
+
+            $("#how_set_package").change(function(){
+                let val = $(this).val();
+                if(val == "default_package"){
+                    $("#content_default_package").show();
+                }else{
+                    $("#content_default_package").hide();
+                    $("#package_id").val("");
+                }
             });
 
             function movementAccount(customer_selected){
