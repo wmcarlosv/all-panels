@@ -399,7 +399,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label for="">Generar:</label>
-                    <select id="generate_new_email" class="form-control">
+                    <select id="generate_new_email" name="generate_new_email" class="form-control">
                         <option value="new_account">Cuenta Nueva</option>
                         <option value="same_account" selected>Misma Cuenta</option>
                     </select>
