@@ -98,7 +98,7 @@ class CronController extends Controller
             //Ejecutando de Jellyfin
             //Customers
             $contadorCJS = 0;
-            $customersJF = JellyfinCustomer::where('date_to', '<', date('Y-m-d'))->limit(5)->get();
+            $customersJF = JellyfinCustomer::where('date_to', '<', date('Y-m-d'))->where('status',1)->limit(5)->get();
 
             foreach($customersJF as $cjf){
                 if(strtotime($cjf->date_to) < strtotime(date('Y-m-d'))){
@@ -114,7 +114,8 @@ class CronController extends Controller
                             $contadorCJS++;
                         } 
                     }else{
-                        $cjf->delete();
+                        $cjf->status = false;
+                        $cjf->save();
                         $contadorCJS++;
                     }
                 }
