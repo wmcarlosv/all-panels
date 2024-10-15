@@ -19,6 +19,7 @@ use App\Models\Server;
 use App\Models\Plex;
 use App\Models\Demo;
 use App\Models\Customer;
+use App\Models\Package;
 
 class ServerController extends VoyagerBaseController
 {
@@ -623,6 +624,15 @@ class ServerController extends VoyagerBaseController
         
         foreach ($ids as $id) {
             $data = call_user_func([$dataType->model_name, 'findOrFail'], $id);
+
+            $server = Server::find($id);
+            if($server->packages->count() > 0){
+                foreach($server->packages as $package){
+                    $pk = Package::find($package->id);
+                    $pk->delete();
+                }
+            }
+        
 
             $this->deleteAllRegister($data->id);
             // Check permission
