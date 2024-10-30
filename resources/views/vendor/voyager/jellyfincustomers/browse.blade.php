@@ -529,6 +529,24 @@
                 $host = request()->getHttpHost();
             @endphp
 
+            $("body").on('click','a.enable-disable-user', function(){
+                let id = $(this).data("id");
+                let status = parseInt($(this).data("status"));
+                let message = "Estas seguro de inactivar este cliente?";
+
+                if(!status){
+                    message = "Estas seguro de activar este cliente?";
+                }
+
+                if(confirm(message)){
+                    $.post("{{route('disable_enable_customer')}}", { id:id, status:status }, function(response){
+                        if(response){
+                            location.reload();
+                        }
+                    });
+                }
+            });
+
             $("body").on('click','a.asing-to-user', function(){
                 let id = $(this).data("id");
                 $("#asing-to-user_id").val(id);

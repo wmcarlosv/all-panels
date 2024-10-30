@@ -98,6 +98,18 @@
 
 		}
 
+		public function isDisabled(JellyfinCustomer $customer, $isDisabled){
+			$laData = json_decode($customer->json_data);
+
+			$policies = [
+				"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
+				"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
+				"IsDisabled"=>boolval($isDisabled)
+			];
+
+			$this->provider->updateUserPolicy($laData->Id, $policies);
+		}
+
 		public function createDemo(JellyfinDemo $demo){
 			$isValid = false;
 			if($demo){

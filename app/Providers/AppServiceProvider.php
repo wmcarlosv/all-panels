@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         Voyager::addAction(\App\Actions\JellyfinUserChangeServerAction::class);
         Voyager::addAction(\App\Actions\JellyfinConnectDeviceAction::class);
         Voyager::addAction(\App\Actions\AddToUserAction::class);
+        Voyager::addAction(\App\Actions\DisableEnableAction::class);
         Paginator::useBootstrap();
     }
 }

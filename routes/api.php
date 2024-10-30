@@ -27,3 +27,4 @@ Route::post('get-jellyfin-libraries', [ApiController::class, 'get_jellyfin_libra
 Route::get('get-customers-by-server/{server_id}', [ApiController::class, 'getCustomersByServer']);
 Route::post('move-customers-massive', [ApiController::class, 'move_massive_customer'])->name("move_customers_massive");
 Route::post('view-sessions-by-user-jellyfin',[ApiController::class, 'view_sessions_by_user_jellyfin'])->name('view_sessions_by_user_jellyfin');
+Route::post('disable-enable-customers', [ApiController::class, 'disable_enable_customer'])->name('disable_enable_customer');

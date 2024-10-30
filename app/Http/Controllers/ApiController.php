@@ -1350,4 +1350,30 @@ class ApiController extends Controller
             'alert-type' => 'success',
         ]);
     }
+
+    public function disable_enable_customer(Request $request){
+        $id = $request->id;
+        $status = $request->status;
+        $newStatus = 1;
+        $success = false;
+
+        if($status){
+            $newStatus = 0;
+        }
+
+        $customer = JellyfinCustomer::find($id);
+
+        $server = JellyfinServer::find($customer->jellyfinserver_id);
+        $response = $this->jellyfin->setCredentials($server);
+
+        if($response){
+            $success = true;
+            $customer->status = $newStatus;
+            $customer->save();
+            
+            $this->jellyfin->isDisabled($customer, $status);
+        }
+
+        return response()->json($success);
+    }
 }
