@@ -569,11 +569,16 @@ class ComposerStaticInit09e3f56191d83ca3be2c00592aabd947
     );
 
     public static $classMap = array (
+        'App\\Actions\\AddToUserAction' => __DIR__ . '/../..' . '/app/Actions/AddToUserAction.php',
+        'App\\Actions\\ChangePasswordJellyfinCustomerAction' => __DIR__ . '/../..' . '/app/Actions/ChangePasswordJellyfinCustomerAction.php',
         'App\\Actions\\ConvertJellyfinCustomer' => __DIR__ . '/../..' . '/app/Actions/ConvertJellyfinCustomer.php',
+        'App\\Actions\\DisableEnableAction' => __DIR__ . '/../..' . '/app/Actions/DisableEnableAction.php',
         'App\\Actions\\ExtendSubscriptionAction' => __DIR__ . '/../..' . '/app/Actions/ExtendSubscriptionAction.php',
-        'App\\Actions\\MasiveChangeServerAction' => __DIR__ . '/../..' . '/app/Actions/MasiveChangeServerAction.php',
+        'App\\Actions\\JellyfinConnectDeviceAction' => __DIR__ . '/../..' . '/app/Actions/JellyfinConnectDeviceAction.php',
+        'App\\Actions\\JellyfinUserChangeServerAction' => __DIR__ . '/../..' . '/app/Actions/JellyfinUserChangeServerAction.php',
         'App\\Actions\\RefreshServerLibrariesAction' => __DIR__ . '/../..' . '/app/Actions/RefreshServerLibrariesAction.php',
         'App\\Actions\\ViewActiveSessionsAction' => __DIR__ . '/../..' . '/app/Actions/ViewActiveSessionsAction.php',
+        'App\\Actions\\ViewActiveSessionsByUserJellyfinAction' => __DIR__ . '/../..' . '/app/Actions/ViewActiveSessionsByUserJellyfinAction.php',
         'App\\Console\\Commands\\CheckCustomers' => __DIR__ . '/../..' . '/app/Console/Commands/CheckCustomers.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
@@ -2126,6 +2131,7 @@ class ComposerStaticInit09e3f56191d83ca3be2c00592aabd947
         'Havenstd06\\LaravelJellyfin\\Services\\Jellyfin' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Services/Jellyfin.php',
         'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI.php',
         'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\Libraries' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/Libraries.php',
+        'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\Sessions' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/Sessions.php',
         'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\System' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/System.php',
         'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\Users' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/Users.php',
         'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinHttpClient' => __DIR__ . '/..' . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinHttpClient.php',

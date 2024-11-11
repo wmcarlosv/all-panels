@@ -6,11 +6,16 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Actions\\AddToUserAction' => $baseDir . '/app/Actions/AddToUserAction.php',
+    'App\\Actions\\ChangePasswordJellyfinCustomerAction' => $baseDir . '/app/Actions/ChangePasswordJellyfinCustomerAction.php',
     'App\\Actions\\ConvertJellyfinCustomer' => $baseDir . '/app/Actions/ConvertJellyfinCustomer.php',
+    'App\\Actions\\DisableEnableAction' => $baseDir . '/app/Actions/DisableEnableAction.php',
     'App\\Actions\\ExtendSubscriptionAction' => $baseDir . '/app/Actions/ExtendSubscriptionAction.php',
-    'App\\Actions\\MasiveChangeServerAction' => $baseDir . '/app/Actions/MasiveChangeServerAction.php',
+    'App\\Actions\\JellyfinConnectDeviceAction' => $baseDir . '/app/Actions/JellyfinConnectDeviceAction.php',
+    'App\\Actions\\JellyfinUserChangeServerAction' => $baseDir . '/app/Actions/JellyfinUserChangeServerAction.php',
     'App\\Actions\\RefreshServerLibrariesAction' => $baseDir . '/app/Actions/RefreshServerLibrariesAction.php',
     'App\\Actions\\ViewActiveSessionsAction' => $baseDir . '/app/Actions/ViewActiveSessionsAction.php',
+    'App\\Actions\\ViewActiveSessionsByUserJellyfinAction' => $baseDir . '/app/Actions/ViewActiveSessionsByUserJellyfinAction.php',
     'App\\Console\\Commands\\CheckCustomers' => $baseDir . '/app/Console/Commands/CheckCustomers.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
@@ -1563,6 +1568,7 @@ return array(
     'Havenstd06\\LaravelJellyfin\\Services\\Jellyfin' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Services/Jellyfin.php',
     'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI.php',
     'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\Libraries' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/Libraries.php',
+    'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\Sessions' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/Sessions.php',
     'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\System' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/System.php',
     'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinAPI\\Users' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinAPI/Users.php',
     'Havenstd06\\LaravelJellyfin\\Traits\\JellyfinHttpClient' => $vendorDir . '/havenstd06/laravel-jellyfin/src/Traits/JellyfinHttpClient.php',

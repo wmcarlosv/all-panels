@@ -209,6 +209,23 @@ class Plex {
         curl_close($ch);
     }
 
+    public function otherRemoveFriend($token, $id){
+        $url = "https://clients.plex.tv/api/v2/sharings/".$id;
+
+        $headers = [
+            'X-Plex-Token:'.$token,
+            'X-Plex-Client-Identifier: '.uniqid()
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return $response;
+    }
+
     public function resetCustomization($token, $ci){
         $url = "https://clients.plex.tv/api/v2/user/settings?sharedSettings=1&X-Plex-Product=Plex%20Web&X-Plex-Token=$token&X-Plex-Client-Identifier=$ci";
         $data = '{"value":[{

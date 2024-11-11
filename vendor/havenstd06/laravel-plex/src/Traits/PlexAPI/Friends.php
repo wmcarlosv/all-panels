@@ -132,13 +132,13 @@ trait Friends
      */
     public function removeFriend(int $id): StreamInterface|array|string
     {
-        $this->apiBaseUrl = $this->config['plex_tv_api_url'];
+        $this->apiBaseUrl = "https://clients.plex.tv/"; //$this->config['plex_tv_api_url'];
 
-        $this->apiEndPoint = "api/v2/friends/{$id}";
+        $this->apiEndPoint = "api/v2/sharings/{$id}";
 
         $this->verb = 'delete';
 
-        return $this->doPlexRequest();
+        return $this->doPlexRequest(false);
     }
 
     /**

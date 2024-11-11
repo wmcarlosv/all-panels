@@ -692,6 +692,7 @@ class ApiController extends Controller
             }
 
             $the_data = DB::table('customers')->select('invited_id')->where('id',$customer->id)->get();
+
             if(empty($the_data[0]->invited_id)){
                 return redirect()->route("voyager.customers.index")->with([
                     'message'=>'Ocurrio un Error al Reparar la cuenta por favor Contacte con el Administrador!!',
