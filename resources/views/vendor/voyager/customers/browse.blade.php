@@ -3,6 +3,12 @@
 @section('page_title', __('voyager::generic.viewing').' '.$dataType->getTranslatedAttribute('display_name_plural'))
 
 @section('page_header')
+<style type="text/css">
+    a.contact-button img{
+        width: 25px !important;
+        height: 25px !important;
+    }
+</style>
     <div class="container-fluid">
         <h1 class="page-title">
             <i class="{{ $dataType->icon }}"></i> {{ $dataType->getTranslatedAttribute('display_name_plural') }}
@@ -332,6 +338,13 @@
                                             </td>
                                         @endforeach
                                         <td class="no-sort no-click bread-actions">
+                                            @if(!empty($data->phone))
+                                            <a href="https://wa.me/{{$data->phone}}" title="Contactar por Whatsapp" target="_blank" class="contact-button whatsapp"><img src="{{asset('images/whatsapp.svg')}}"></a>
+                                            @endif
+
+                                            @if(!empty($data->telegram_user_name))
+                                                <a href="https://t.me/{{$data->telegram_user_name}}" title="Contactar por Telegram" target="_blank" class="contact-button telegram"><img src="{{asset('images/telegram.webp')}}"> </a>
+                                            @endif
                                             <div class="dropdown" id="menu-content" style="display: inline !important;">
                                               <a class="btn btn-success dropdown-toggle" title="Mas Opciones" id="dropdownMenu1" data-toggle="dropdown">
                                                 <i class="voyager-list-add"></i>
@@ -1142,12 +1155,18 @@
             @if(Session::get('modal'))
                 @php 
                     $data = Session::get('modal');
+                    $extra_info = "";
+                    if($data->user){
+                        if(!empty($data->user->aditional_info)){
+                            $extra_info = $data->user->aditional_info;
+                        }
+                    }
                 @endphp
                 @if($data->password == "#5inCl4ve#")
                     Swal.fire({
                       title: 'Estos son los datos que debes darle al cliente!!',
                       icon: 'info',
-                      html:'<textarea id="field_copy" class="form-control" style="height: 200px; width: 403px;" readonly>Correo: {{$data->email}}\nEnlace Activacion: https://plex.tv/servers/shared_servers/accept?invite_token={{$data->plex_user_id}}\nUsuario: {{$data->plex_user_name}}\nPantallas: {{$data->screens}}\nPin: {{$data->pin}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
+                      html:'<textarea id="field_copy" class="form-control" style="height: 200px; width: 403px;" readonly>Correo: {{$data->email}}\nEnlace Activacion: https://plex.tv/servers/shared_servers/accept?invite_token={{$data->plex_user_id}}\nUsuario: {{$data->plex_user_name}}\nPantallas: {{$data->screens}}\nPin: {{$data->pin}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}\n{{$extra_info}}</textarea>',
                       confirmButtonColor: '#5cb85c',
                       confirmButtonText: 'Copiar y Salir',
                       allowOutsideClick:false
@@ -1161,7 +1180,7 @@
                     Swal.fire({
                       title: 'Estos son los datos que debes darle al cliente!!',
                       icon: 'info',
-                      html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: {{$data->email}}\nClave: {{$data->password}}\nUsuario: {{$data->plex_user_name}}\nPantallas: {{$data->screens}}\nPin: {{$data->pin}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}</textarea>',
+                      html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: {{$data->email}}\nClave: {{$data->password}}\nUsuario: {{$data->plex_user_name}}\nPantallas: {{$data->screens}}\nPin: {{$data->pin}}\nFecha de Vencimiento: {{date("d-m-Y",strtotime($data->date_to))}}\n{{$extra_info}}</textarea>',
                       confirmButtonColor: '#5cb85c',
                       confirmButtonText: 'Copiar y Salir',
                       allowOutsideClick:false

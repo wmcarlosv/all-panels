@@ -248,6 +248,7 @@ class AdminSettingSeeder extends Seeder
                 'group'        => 'Admin',
             ])->save();
         }
+
     }
 
     protected function findSetting($key)
