@@ -809,7 +809,7 @@
                 Swal.fire({
                       title: 'Estos son los datos que debes darle al cliente!!',
                       icon: 'info',
-                      html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: '+data.email+'\nClave: '+data.password+'\nUsuario: '+data.plex_user_name+'\nPantallas: '+data.screens+'\nFecha de Vencimiento: '+data.date_to.split("-").reverse().join('-')+'\n{{$extra_info}}</textarea>',
+                      html:`<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: ${data.email}\nClave: ${data.password}\nUsuario: ${data.plex_user_name}\nPantallas: ${data.screens}\nFecha de Vencimiento: ${data.date_to.split("-").reverse().join('-')}\n{{$extra_info}}</textarea>`,
                       confirmButtonColor: '#5cb85c',
                       confirmButtonText: 'Copiar y Salir',
                       allowOutsideClick:false
