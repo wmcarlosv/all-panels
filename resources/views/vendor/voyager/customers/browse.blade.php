@@ -348,7 +348,7 @@
                                             @if(!empty($data->telegram_user_name))
                                                 <a href="https://t.me/{{$data->telegram_user_name}}" title="Contactar por Telegram" target="_blank" class="contact-button telegram"><img src="{{asset('images/telegram.webp')}}"> </a>
                                             @endif
-                                            
+
                                             <div class="dropdown" id="menu-content" style="display: inline !important;">
                                               <a class="btn btn-success dropdown-toggle" title="Mas Opciones" id="dropdownMenu1" data-toggle="dropdown">
                                                 <i class="voyager-list-add"></i>
@@ -799,11 +799,17 @@
 
             $("body").on('click','a.copy', function(){
                 let data = JSON.parse($(this).attr("data-row"));
+                @php 
+                    $extra_info = "";
+                    if(!empty(Auth::user()->aditional_info)){
+                        $extra_info = Auth::user()->aditional_info;
+                    }
+                @endphp
                 console.log(data);
                 Swal.fire({
                       title: 'Estos son los datos que debes darle al cliente!!',
                       icon: 'info',
-                      html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: '+data.email+'\nClave: '+data.password+'\nUsuario: '+data.plex_user_name+'\nPantallas: '+data.screens+'\nFecha de Vencimiento: '+data.date_to.split("-").reverse().join('-')+'\n'+'</textarea>',
+                      html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: '+data.email+'\nClave: '+data.password+'\nUsuario: '+data.plex_user_name+'\nPantallas: '+data.screens+'\nFecha de Vencimiento: '+data.date_to.split("-").reverse().join('-')+'\n{{$extra_info}}</textarea>',
                       confirmButtonColor: '#5cb85c',
                       confirmButtonText: 'Copiar y Salir',
                       allowOutsideClick:false

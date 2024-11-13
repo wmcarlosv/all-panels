@@ -500,11 +500,18 @@
             @if(Session::get('modal'))
                 @php 
                     $data = Session::get('modal');
+                    $extra_info = "";
+                    if($data->user){
+                        if(!empty($data->user->aditional_info)){
+                            $extra_info = $data->user->aditional_info;
+                        }
+                    }
                 @endphp
+
                 Swal.fire({
                   title: 'Estos son los datos que debes darle al cliente!!',
                   icon: 'info',
-                  html:'<textarea id="field_copy" class="form-control" style="height: 135px; width: 403px;" readonly>Correo: {{$data->email}}\nClave: {{$data->password}}\nUsuario: {{$data->plex_user_name}}\nFecha de Vencimiento: {{date("d-m-Y H:m:s",strtotime($data->end_date))}}</textarea>',
+                  html:'<textarea id="field_copy" class="form-control" style="height: 135px; width: 403px;" readonly>Correo: {{$data->email}}\nClave: {{$data->password}}\nUsuario: {{$data->plex_user_name}}\nFecha de Vencimiento: {{date("d-m-Y H:m:s",strtotime($data->end_date))}}\n{{$extra_info}}</textarea>',
                   confirmButtonColor: '#5cb85c',
                   confirmButtonText: 'Copiar y Salir',
                   allowOutsideClick:false
