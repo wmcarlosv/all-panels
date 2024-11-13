@@ -338,6 +338,9 @@
                                             </td>
                                         @endforeach
                                         <td class="no-sort no-click bread-actions">
+
+                                            <a href="#" title="Mostrar Datos" data-row='{{json_encode($data)}}' class="contact-button copy"><img src="{{asset('images/copy.png')}}"></a>
+
                                             @if(!empty($data->phone))
                                             <a href="https://wa.me/{{$data->phone}}" title="Contactar por Whatsapp" target="_blank" class="contact-button whatsapp"><img src="{{asset('images/whatsapp.svg')}}"></a>
                                             @endif
@@ -345,6 +348,7 @@
                                             @if(!empty($data->telegram_user_name))
                                                 <a href="https://t.me/{{$data->telegram_user_name}}" title="Contactar por Telegram" target="_blank" class="contact-button telegram"><img src="{{asset('images/telegram.webp')}}"> </a>
                                             @endif
+                                            
                                             <div class="dropdown" id="menu-content" style="display: inline !important;">
                                               <a class="btn btn-success dropdown-toggle" title="Mas Opciones" id="dropdownMenu1" data-toggle="dropdown">
                                                 <i class="voyager-list-add"></i>
@@ -792,6 +796,24 @@
 
         $(document).ready(function () {
             var id;
+
+            $("body").on('click','a.copy', function(){
+                let data = JSON.parse($(this).attr("data-row"));
+                console.log(data);
+                Swal.fire({
+                      title: 'Estos son los datos que debes darle al cliente!!',
+                      icon: 'info',
+                      html:'<textarea id="field_copy" class="form-control" style="height: 150px; width: 403px;" readonly>Correo: '+data.email+'\nClave: '+data.password+'\nUsuario: '+data.plex_user_name+'\nPantallas: '+data.screens+'\nFecha de Vencimiento: '+data.date_to.split("-").reverse().join('-')+'\n'+'</textarea>',
+                      confirmButtonColor: '#5cb85c',
+                      confirmButtonText: 'Copiar y Salir',
+                      allowOutsideClick:false
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        $("#field_copy").select();
+                        document.execCommand('copy');
+                      }
+                    });
+            });
 
             $("#server_id").change(function(){
                 let packages = $(this).children("option:selected").data("packages");

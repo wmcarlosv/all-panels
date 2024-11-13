@@ -6,6 +6,11 @@
     ul.nav li.active a:hover {
         background: #62a8ea !important;
     }
+
+    a.contact-button img{
+        width: 25px !important;
+        height: 25px !important;
+    }
 </style>
 @stop
 
@@ -92,6 +97,7 @@
                                                     <th>Servidor</th>
                                                     <th>Dias Restantes</th>
                                                     <th>Fecha Fin</th>
+                                                    <th>Contacto</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -109,6 +115,15 @@
                                                                 <td>{{ $customer->server->name." ".$customer->server->local_name }}</td>
                                                                 <td>{{ $daysDifference }}</td>
                                                                 <td>{{ date('d-m-Y', strtotime($customer->date_to)) }}</td>
+                                                                <td>
+                                                                    @if(!empty($customer->phone))
+                                                                    <a href="https://wa.me/{{$customer->phone}}" title="Contactar por Whatsapp" target="_blank" class="contact-button whatsapp"><img src="{{asset('images/whatsapp.svg')}}"></a>
+                                                                    @endif
+
+                                                                    @if(!empty($customer->telegram_user_name))
+                                                                        <a href="https://t.me/{{$customer->telegram_user_name}}" title="Contactar por Telegram" target="_blank" class="contact-button telegram"><img src="{{asset('images/telegram.webp')}}"> </a>
+                                                                    @endif
+                                                                </td>
                                                             </tr>
                                                         @endif
                                                     @endforeach
