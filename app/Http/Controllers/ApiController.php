@@ -1203,7 +1203,7 @@ class ApiController extends Controller
 
             $customer->password = $request->new_password;
             $customer->save();
-
+            Session::flash('modal',$customer);
             if(!$this->jellyfin->createUser($customer)){
                 $errors++;
             }
