@@ -143,6 +143,8 @@
 				   	"MaxActiveSessions"=>(int) $demo->screens,
 				   	"EnableContentDownloading"=>false
 				);
+
+				$this->provider->updateUserPolicy($laData->Id, $library_access_data);
 			}
 
 			return $isValid;
