@@ -140,7 +140,8 @@
 				$library_access_data = array(
 					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
-				   	"MaxActiveSessions"=>(int) $demo->screens
+				   	"MaxActiveSessions"=>(int) $demo->screens,
+				   	"EnableContentDownloading"=>false
 				);
 			}
 
