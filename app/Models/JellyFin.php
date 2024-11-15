@@ -129,6 +129,7 @@
 					"AuthenticationProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider",
 					"PasswordResetProviderId"=>"Jellyfin.Server.Implementations.Users.DefaultPasswordResetProvider",
 				    "EnableAllFolders"=>false,
+				    "EnableContentDownloading"=>false,
 				    "EnabledFolders"=>$libraries,
 				    "MaxActiveSessions"=>(int) $demo->screens
 				);
