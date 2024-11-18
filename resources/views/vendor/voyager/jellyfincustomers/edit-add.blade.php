@@ -86,6 +86,12 @@
                                         {!! app('voyager')->formField($row, $dataType, $dataTypeContent) !!}
                                     @endif
 
+                                    @if($row->field == "password")
+                                        @if(!$edit)
+                                            <a class="btn btn-success" id="generate-user-and-password" href="#">Generar Usuario y Clave</a>
+                                        @endif
+                                    @endif
+
                                     @foreach (app('voyager')->afterFormFields($row, $dataType, $dataTypeContent) as $after)
                                         {!! $after->handle($row, $dataType, $dataTypeContent) !!}
                                     @endforeach
@@ -163,7 +169,31 @@
           };
         }
 
+        function generateAndSetCredentials() {
+            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const specialCharacters = "!@#$%^&*()-_=+[]{}|;:',.<>?/";
+
+            // Generate random username (10 characters long)
+            const user = Array.from({ length: 10 }, () => characters.charAt(Math.floor(Math.random() * characters.length))).join('');
+
+            // Generate random password (minimum 8 characters: letters, numbers, special chars)
+            const passwordLength = 8;
+            const password = Array.from({ length: passwordLength }, (_, i) => {
+                if (i < 2) return specialCharacters.charAt(Math.floor(Math.random() * specialCharacters.length));
+                if (i < 4) return characters.charAt(Math.floor(Math.random() * 10)); // Ensure numbers
+                return characters.charAt(Math.floor(Math.random() * characters.length));
+            }).sort(() => Math.random() - 0.5).join('');
+
+            // Set the values in the form fields
+            $('[name="name"]').val(user);
+            $('[name="password"]').val(password);
+        }
+
         $('document').ready(function () {
+            
+            $("#generate-user-and-password").click(function(){
+                generateAndSetCredentials();
+            });
 
             @if(Auth::user()->role_id == 3 || Auth::user()->role_id == 5)
                 @if(setting('admin.max_reseller_screen'))
